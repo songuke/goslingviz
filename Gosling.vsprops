@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="gb2312"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="Gosling"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="./include;../include;../stk/include"
+		PreprocessorDefinitions="__WINDOWS_DS__;WIN32;_CONSOLE;__LITTLE_ENDIAN__;__WINDOWS_MM__"
+		UsePrecompiledHeader="2"
+		PrecompiledHeaderThrough="GosMustHave.h"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="glut32.lib glew32.lib AntTweakBar.lib libfftw3-3.lib"
+		OutputFile="$(SolutionDir)\$(ProjectName).exe"
+		AdditionalLibraryDirectories="../lib"
+	/>
+</VisualStudioPropertySheet>

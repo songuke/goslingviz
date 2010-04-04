@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C++ Express 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gosling", "Gosling\Gosling.vcproj", "{63F755CA-F3B6-45E6-B2AB-FB36A3E8442E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D7B567A8-BCAE-47C4-8C09-B6B9F02E3905} = {D7B567A8-BCAE-47C4-8C09-B6B9F02E3905}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "stk", "stk\stk.vcproj", "{D7B567A8-BCAE-47C4-8C09-B6B9F02E3905}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{63F755CA-F3B6-45E6-B2AB-FB36A3E8442E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{63F755CA-F3B6-45E6-B2AB-FB36A3E8442E}.Debug|Win32.Build.0 = Debug|Win32
+		{63F755CA-F3B6-45E6-B2AB-FB36A3E8442E}.Release|Win32.ActiveCfg = Release|Win32
+		{63F755CA-F3B6-45E6-B2AB-FB36A3E8442E}.Release|Win32.Build.0 = Release|Win32
+		{D7B567A8-BCAE-47C4-8C09-B6B9F02E3905}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D7B567A8-BCAE-47C4-8C09-B6B9F02E3905}.Debug|Win32.Build.0 = Debug|Win32
+		{D7B567A8-BCAE-47C4-8C09-B6B9F02E3905}.Release|Win32.ActiveCfg = Release|Win32
+		{D7B567A8-BCAE-47C4-8C09-B6B9F02E3905}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

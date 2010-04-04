@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="DirectX"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="$(DXSDK_DIR)\Include"
+	/>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="dsound.lib"
+		AdditionalLibraryDirectories="$(DXSDK_DIR)\Lib\x86"
+	/>
+</VisualStudioPropertySheet>
