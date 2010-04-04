@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="gb2312"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="stk"
+	>
+	<Tool
+		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="./include; ./src/include"
+		PreprocessorDefinitions="__WINDOWS_DS__;WIN32;_CONSOLE;__LITTLE_ENDIAN__;__WINDOWS_MM__"
+	/>
+</VisualStudioPropertySheet>
