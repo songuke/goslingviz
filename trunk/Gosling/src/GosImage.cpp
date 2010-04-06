@@ -9,6 +9,7 @@ Image::Image(int _width, int _height)
 	buffer = (byte*) malloc(width * height * channels * sizeof(byte));
 	center.x = floor(width * 0.5f);
 	center.y = floor(height * 0.5f);
+	this->setGrid(1, 1);
 }
 
 Image::Image(int _width, int _height, int _channels) 
@@ -18,6 +19,16 @@ Image::Image(int _width, int _height, int _channels)
 	buffer = (byte*) malloc(width * height * channels * sizeof(byte));
 	center.x = floor(width * 0.5f);
 	center.y = floor(height * 0.5f);
+	this->setGrid(1, 1);
+}
+
+Image::Image(byte* _buffer, int _width, int _height, int _channels)
+: buffer(_buffer), width(_width), height(_height), channels(_channels),
+  s(0), t(0)
+{
+	center.x = floor(width * 0.5f);
+	center.y = floor(height * 0.5f);
+	this->setGrid(1, 1);
 }
 
 Image::~Image(void)
@@ -43,9 +54,14 @@ byte* Image::getPixels() const {
 	return buffer;
 }
 
+String Image::getName() const {
+	return name;
+}
+
 Image* Image::clone() {
 	Image* im = new Image(width, height, channels);
 	im->center = center;
+	im->setGrid(stepI, stepJ);
 	memcpy(im->getPixels(), this->getPixels(), sizeof(byte) * width * height * channels);
 	return im;
 }
@@ -58,6 +74,8 @@ void Image::copy(Image* im) {
 	if (! isSameSize(im))
 		throw std::exception("Copy image size not equal.");
 
+	im->center = center;
+	im->setGrid(stepI, stepJ);
 	memcpy(this->getPixels(), im->getPixels(), sizeof(byte) * width * height * channels);
 }
 
@@ -145,6 +163,19 @@ void Image::interpolateAtGrid() {
 		}
 
 		y0 = y1;
+	}
+}
+
+void Image::scaleFrom(Image* im) {
+	float stepWidth = (float) im->getWidth() / width;
+	float stepHeight = (float) im->getHeight() / height;
+	Float2 s(stepWidth, stepHeight);
+	for (int i = 0; i < height; ++i) {
+		for (int j = 0; j < width; ++j) {
+			Float2 p(j, i);
+			Float2 q = p * s;
+			this->setPixel(p, im->getPixelBilinear(q));
+		}
 	}
 }
 

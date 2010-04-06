@@ -29,17 +29,17 @@ void Curve::render(Image* image, Chunk& c) {
 	Float2 p0, p1;
 
 	// draw a circle
-	/*
+	
 	double t0 = 0;
 	double t1 = 2 * M_PI;
 	p0 = CurveFunc::circle(t0, r);
-	*/
-	// draw a heart
 	
+	// draw a heart
+	/*
 	double t0 = 0;
 	double t1 = 2 * M_PI;
 	p0 = CurveFunc::heart(t0, r);
-	
+	*/
 
 	// draw a flower
 	/*
@@ -56,8 +56,8 @@ void Curve::render(Image* image, Chunk& c) {
 	while (t < t1) {
 		t = std::min(t += step, t1);
 
-		//p1 = CurveFunc::circle(t, r);
-		p1 = CurveFunc::heart(t, r);
+		p1 = CurveFunc::circle(t, r);
+		//p1 = CurveFunc::heart(t, r);
 		//p1 = CurveFunc::flower(t, r);
 		
 		// change to coordinate system from center to top left

@@ -45,6 +45,7 @@ int winHeight	=	480;
 //-----------------------------------------------------------------------------
 Chunk chunk;
 boost::mutex mutexChunk;		// for thread safe read/write to chunk
+bool	isPlaying = false;
 
 //-----------------------------------------------------------------------------
 // Rendering
@@ -115,7 +116,7 @@ int loadAntTweakBar() {
 void display(void)
 {
 	// timer update
-	timer.Update();
+	int delta = timer.Update();
 
     // clear frame buffer
     glClearColor(0, 0, 0, 1);
@@ -124,9 +125,10 @@ void display(void)
     // draw tweak bars
     //TwDraw();
 
-	// visualization
+	// visualization	
 	mutexChunk.lock();
 	try {
+		visualizer->update(delta);
 		visualizer->render(chunk, rectVis);
 	} catch (std::exception& e) {
 		printf("Exception: %s\n", e.what());
@@ -180,6 +182,10 @@ void reshape(int width, int height)
 {
 	winWidth	= width;
 	winHeight	= height;
+	// TODO: in order to support rectangle window, the texture loaded from file should be scaled to 
+	// match the window size. This is not done yet.
+	//winWidth = winHeight = mmin(width, height); 
+
 
     // Set OpenGL viewport and camera
     glViewport(0, 0, winWidth, winHeight);
@@ -215,8 +221,9 @@ void keyboard(unsigned char key, int x, int y) {
 	switch (key) {
 		case ' ':
 			play();
-			break;
+			break;		
 	}
+	visualizer->onKey(key);
 }
 
 void special(int key, int x, int y) {
@@ -249,9 +256,14 @@ void mainAudio() {
 		// sleep
 		sleepMiliseconds(1);
 	}
+
+	isPlaying = false;
 }
 
 void play() {
+	if (isPlaying) return;
+
+	isPlaying = true;
 	// use Boost.Thread to create a thread for audio playback
 	boost::thread threadAudio(mainAudio);
 }
