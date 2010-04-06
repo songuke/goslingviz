@@ -76,6 +76,11 @@ namespace Gos
 	class Image;
 	class Line;
 	class Curve;
+	
+	class CurveWarp;
+	class ImageManager;
+
+
 
 //-----------------------------------------------------------------------------
 // Boost definition

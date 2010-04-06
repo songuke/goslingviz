@@ -21,6 +21,21 @@ namespace Gos
 	// integer swap
 	#define SWAP(x, y) (x ^= y ^= x ^= y)
 
+	// image
+	struct Size {
+		int width;
+		int height;
+	};
+	
+	enum PixelFormat {
+		rzRGB8,
+		rzRGBA8,
+		rzRGB16,
+		rzRGBA16,
+		rzRGB32,
+		rzRGBA32
+	};
+
 	extern "C" {
 		void  rzInfo(const char*, ...);
 		void  rzWarning(const char*, ...);

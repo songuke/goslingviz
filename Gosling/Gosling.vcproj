@@ -213,6 +213,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\GosImageManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\GosLine.cpp"
 				>
 			</File>
@@ -308,6 +312,10 @@
 			</File>
 			<File
 				RelativePath=".\include\GosImage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\GosImageManager.h"
 				>
 			</File>
 			<File

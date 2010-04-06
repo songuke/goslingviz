@@ -13,7 +13,7 @@
 	/>
 	<Tool
 		Name="VCLinkerTool"
-		AdditionalDependencies="glut32.lib glew32.lib AntTweakBar.lib libfftw3-3.lib"
+		AdditionalDependencies="glut32.lib glew32.lib AntTweakBar.lib libfftw3-3.lib FreeImage.lib"
 		OutputFile="$(SolutionDir)\$(ProjectName).exe"
 		AdditionalLibraryDirectories="../lib"
 	/>
