@@ -45,7 +45,7 @@ namespace Gos
 // Constant
 //-----------------------------------------------------------------------------
 	const int kSampleRate		= 44100;
-	const int kOutputBufferSize = 1024;
+	const int kOutputBufferSize = 4096;
 
 
 

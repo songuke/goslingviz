@@ -197,6 +197,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\GosGlobalVisualizer.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\GosGuitarBody.cpp"
 				>
 			</File>
@@ -296,6 +300,10 @@
 			</File>
 			<File
 				RelativePath=".\include\GosFloat4.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\GosGlobalVisualizer.h"
 				>
 			</File>
 			<File
