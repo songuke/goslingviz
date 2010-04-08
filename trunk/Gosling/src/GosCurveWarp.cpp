@@ -5,9 +5,10 @@
 namespace Gos
 {
 int CurveWarp::nextWarpTime = 5000;
-
+int CurveWarp::drawCurveTime = 500;
+int CurveWarp::nextCurveTime = 5000;
 CurveWarp::CurveWarp(void)
-: imageOut(0), scaledBackground(0), warpType(4)
+: imageOut(0), scaledBackground(0), warpType(1), drawCurveTimeElapsed(0), drawCurve(false), nextCurveTimeElapsed(0), curveType(0)
 {
 	imageManager = ImageManager::instance();
 	background = imageManager->load("./images/cloud.png");
@@ -27,13 +28,28 @@ void CurveWarp::update(int delta) {
 	warp.update(delta);
 
 	while (timeElapsed > nextWarpTime) {
-		warpType = (warpType + 1) % 5;
+		warpType = (warpType + 1) % warp.getWarpCount();		
 		timeElapsed -= nextWarpTime;
 
 		// reset background
 		//if (warpType == 1)
 			//buffer->copy(scaledBackground);
+		printf("Warp changed: %d\n", warpType);
 	}
+
+	drawCurveTimeElapsed += delta;
+	while (drawCurveTimeElapsed > drawCurveTime) {
+		drawCurveTimeElapsed -= drawCurveTime;
+		drawCurve = true;
+	}
+
+	nextCurveTimeElapsed += delta;
+	if (nextCurveTimeElapsed > nextCurveTime) {
+		nextCurveTimeElapsed -= nextCurveTime;
+		curveType = (curveType + 1) % curve.getCurveCount();
+		printf("Curve changed: %d\n", curveType);
+	}
+
 	Visualizer2D::update(delta);
 }
 
@@ -78,8 +94,11 @@ void CurveWarp::renderBuffer(Chunk& c, Rect r) {
 	}
 
 	// draw a curve
-	if (firstCurveWarp)
-		curve.render(buffer, c);
+	if (drawCurve) {
+		printf("Draw curve\n");
+		curve.render(buffer, c, curveType);
+		drawCurve = false;
+	}
 
 	// warp
 	warp.render(buffer, imageOut, c, warpType);
@@ -92,6 +111,10 @@ void CurveWarp::renderBuffer(Chunk& c, Rect r) {
 }
 
 void CurveWarp::onKey(int key) {
+	if (key >= '0' && key <= '9') {
+		warpType = key - '0';
+		return;
+	}
 	switch (key) {
 		case 13:
 			buffer->copy(scaledBackground);

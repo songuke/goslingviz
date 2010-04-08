@@ -31,6 +31,14 @@ protected:
 
 	int warpType;
 	static int nextWarpTime;
+
+	int curveType;
+	static int nextCurveTime;
+	long nextCurveTimeElapsed;
+
+	bool drawCurve;
+	static int drawCurveTime;
+	long drawCurveTimeElapsed;
 };
 }
 #endif
