@@ -2,6 +2,7 @@
 #define _GOS_CURVE_FUNC_
 
 #include "GosMustHave.h"
+#include "GosChunk.h"
 
 namespace Gos
 {
@@ -13,29 +14,37 @@ public:
 	virtual ~CurveFunc(void);
 	
 public:
-	static inline Float2 circle(float t, float r) {
+	static inline Float2 circle(float t, float a, Chunk& c) {
 		Float2 p;
-		p.x = r * cos(t);
-		p.y = r * sin(t);
+		p.x = a * cos(t);
+		p.y = a * sin(t);
 		return p;
 	}
 
-	static inline Float2 heart(float t, float a) {
+	static inline Float2 heart(float t, float a, Chunk& c) {
 		Float2 p;
 		//float r = 10.0f * a * ((sin(t) * sqrt(fabs(cos(t)))) / (sin(t) + 7/5) - 2 * sin(t) + 2);
-		float r = 5.0f * a * (1 - cos(t));
+		float r = a * (1 - cos(t));
 		p.x = r * cos(t);
 		p.y = r * sin(t);
 		return p;
 	}
 
-	static inline Float2 flower(float t, float a) {
+	static inline Float2 flower(float t, float a, Chunk& c) {
 		Float2 p;
 		int n = 4;
-		float r = 10.0f * a * sin(n * t);
+		float r = a * sin(n * t);
 		p.x = r * cos(t);
 		p.y = r * sin(t);
 		return p;
+	}
+
+	static inline Float2 oscilloscope(float t, float a, Chunk& c) {
+		Float2 q;
+		q.x = 2*t - 1;
+		int index = t * kChunkSize;
+		q.y = 0.2f * c.amplitude[index][0];
+		return q;
 	}
 };
 }
