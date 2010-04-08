@@ -14,11 +14,12 @@ public:
 	CurveWarp(void);
 	~CurveWarp(void);
 
-protected:
+public:
 	void update(int delta);
-	void renderBuffer(Chunk& c, Rect r);
 	void sleep();
 	void onKey(int key);
+protected:
+	void renderBuffer(Chunk& c, Rect r);
 
 protected:
 	Curve curve;

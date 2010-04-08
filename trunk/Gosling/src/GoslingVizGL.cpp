@@ -19,6 +19,7 @@
 #include "GosOscilloscope.h"
 #include "GosSpectrogram.h"
 #include "GosCurveWarp.h"
+#include "GosGlobalVisualizer.h"
 #include "RenzoTimer.h"
 
 using namespace Gos;
@@ -37,8 +38,8 @@ using namespace Renzo;
 //-----------------------------------------------------------------------------
 // Window
 //-----------------------------------------------------------------------------
-int winWidth	=	640;
-int winHeight	=	480;
+int winWidth	=	480;
+int winHeight	=	600;
 
 //-----------------------------------------------------------------------------
 // Audio
@@ -65,6 +66,18 @@ void	renderString(float x, float y,
 int		loadAntTweakBar();
 void	play();
 
+
+AudioIn audioIn;
+AudioOut audioOut;
+const String fileAudio = "music/The_Sad_Rose.wav";
+
+int		audioFrameTime = 0;
+int		visualFrameTime = 0;
+const float	audioFPS = kSampleRate / kChunkSize;
+int		idealFrameTime = 1000 / audioFPS;
+
+Timer	audioTimer;
+Timer	visualTimer;
 //-----------------------------------------------------------------------------
 /**
  Initialization. Called once when OpenGL starts.
@@ -80,8 +93,16 @@ void init() {
 
 	//visualizer = new Oscilloscope();
 	//visualizer = new Spectrogram();
-	visualizer = new CurveWarp();
+	//visualizer = new CurveWarp();
+	visualizer = new GlobalVisualizer();
 }
+
+void initAudio() {
+	audioIn.loadAudio(fileAudio);
+	audioOut.setChannels(audioIn.getChannels());
+	
+}
+
 
 void cleanUp() {
 	safeDel(visualizer);
@@ -117,6 +138,8 @@ void display(void)
 {
 	// timer update
 	int delta = timer.Update();
+	visualTimer.Reset();
+	visualTimer.Update();
 
     // clear frame buffer
     glClearColor(0, 0, 0, 1);
@@ -126,17 +149,20 @@ void display(void)
     //TwDraw();
 
 	// visualization	
-	mutexChunk.lock();
+	//mutexChunk.lock();
 	try {
 		visualizer->update(delta);
 		visualizer->render(chunk, rectVis);
 	} catch (std::exception& e) {
 		printf("Exception: %s\n", e.what());
 	}
-	mutexChunk.unlock();
+	//mutexChunk.unlock();
 	
+	visualTimer.Update();
+	visualFrameTime = visualTimer.GetTimeElapsed();
+
 	// the visualizer skips a few frames, as our eyes are not that fast to see visualization every frame.
-	visualizer->sleep();
+	//visualizer->sleep();
 
 	// draw FPS
 	char fps[16];
@@ -147,7 +173,41 @@ void display(void)
     glutSwapBuffers();
 
     // recall Display at next frame
-    glutPostRedisplay();
+    //glutPostRedisplay();
+}
+
+void idle() {
+	audioTimer.Reset();
+	audioTimer.Update();
+	// play audio first
+	if (isPlaying) {
+		if (audioIn.hasNext()) {
+			// get a chunk
+			//mutexChunk.lock();
+			audioIn.sampleChunk(chunk);		
+			//mutexChunk.unlock();
+
+			// send to output
+			audioOut.tickChunk(chunk);
+			
+			// sleep
+			//sleepMiliseconds(1);
+		} else {
+			isPlaying = false;
+		}
+	}
+	audioTimer.Update();
+	audioFrameTime = audioTimer.GetTimeElapsed();
+
+	// decide to render or skip frame
+	if (visualFrameTime <= idealFrameTime - audioFrameTime) 
+		// render
+		glutPostRedisplay();
+	else
+		//visualFrameTime -= audioFrameTime;
+		visualFrameTime = 0;
+	// sleep
+	sleepMiliseconds(1);
 }
 
 void renderString(float x, float y, void *font, const char* str, Float4 const& rgb)
@@ -236,28 +296,7 @@ void termination(void)
 }
 
 void mainAudio() {
-	AudioIn audioIn;
-	AudioOut audioOut;
-	const String fileAudio = "music/The_Sad_Rose.wav";
-	audioIn.loadAudio(fileAudio);
-	audioOut.setChannels(audioIn.getChannels());
 	
-	boost::system_time t;
-	
-	while (audioIn.hasNext()) {
-		// get a chunk
-		mutexChunk.lock();
-		audioIn.sampleChunk(chunk);		
-		mutexChunk.unlock();
-
-		// send to output
-		audioOut.tickChunk(chunk);
-		
-		// sleep
-		sleepMiliseconds(1);
-	}
-
-	isPlaying = false;
 }
 
 void play() {
@@ -294,12 +333,14 @@ int main(int argc, char *argv[])
     glutPassiveMotionFunc(passiveMotion);
     glutKeyboardFunc(keyboard);
     glutSpecialFunc(special);
+	glutIdleFunc(idle);
     
     // called after glutMainLoop ends
 	atexit(termination);  
 	
 	// initialize
 	init();
+	initAudio();
 
     // call the GLUT main loop
     glutMainLoop();

@@ -3,6 +3,8 @@
 
 #include "GosMustHave.h"
 #include "GosVisualizer.h"
+#include "GosChunk.h"
+#include <deque>
 
 namespace Gos
 {
@@ -16,8 +18,10 @@ public:
 	void render(Chunk& c, Rect r);
 
 protected:
-	//Chunk chunk1;
-	//Chunk chunk2;
+	void renderChunk(Chunk& c, Rect r, float alpha);
+	std::deque<Chunk> q;
+	static const int queueSize = 4;
+	static float alpha[queueSize];
 };
 }
 
