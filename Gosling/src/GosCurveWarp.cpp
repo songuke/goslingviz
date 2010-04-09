@@ -8,7 +8,7 @@ int CurveWarp::nextWarpTime = 5000;
 int CurveWarp::drawCurveTime = 500;
 int CurveWarp::nextCurveTime = 5000;
 CurveWarp::CurveWarp(void)
-: imageOut(0), scaledBackground(0), warpType(1), drawCurveTimeElapsed(0), drawCurve(false), nextCurveTimeElapsed(0), curveType(0)
+: imageOut(0), scaledBackground(0), warpType(0), drawCurveTimeElapsed(0), drawCurve(false), nextCurveTimeElapsed(0), curveType(0)
 {
 	imageManager = ImageManager::instance();
 	background = imageManager->load("./images/cloud.png");
@@ -93,18 +93,38 @@ void CurveWarp::renderBuffer(Chunk& c, Rect r) {
 		}*/
 	}
 
-	// draw a curve
+	int stepI = 1;
+	int stepJ = stepI;
+
+	buffer->setGrid(stepI, stepJ);
+	imageOut->setGrid(stepI, stepJ);
+
+	// draw a curve	
 	if (drawCurve) {
 		printf("Draw curve\n");
-		curve.render(buffer, c, curveType);
-		drawCurve = false;
+		curve.setUseMask(true);
+		curve.setGrid(stepI, stepJ);
+		curve.render(buffer, c, curveType);		
 	}
 
-	// warp
+	// warp	
+	warp.setGrid(stepI, stepJ);
 	warp.render(buffer, imageOut, c, warpType);
 
 	// copy back
 	buffer->copy(imageOut);
+	
+	
+	// draw the curve again	
+	/*
+	if (drawCurve) {
+		printf("Draw curve\n");
+		curve.setUseMask(false);
+		curve.render(buffer, c, curveType);		
+	}*/	
+	
+	if (drawCurve)
+		drawCurve = false;
 
 	if (firstCurveWarp)
 		firstCurveWarp = false;
