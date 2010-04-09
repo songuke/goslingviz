@@ -20,7 +20,8 @@ public:
 	void onKey(int key);
 protected:
 	void renderBuffer(Chunk& c, Rect r);
-
+	
+	void blur(Image* imageIn, Image* imageOut, Float2& k);
 protected:
 	Curve curve;
 	Warp warp;
@@ -29,6 +30,7 @@ protected:
 	Image* imageOut;
 	Image* scaledBackground;
 	Image* background;
+	Image* imageTmp;
 
 	int warpType;
 	static int nextWarpTime;
