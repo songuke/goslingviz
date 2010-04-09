@@ -181,6 +181,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\GosBeatDetector.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\GosCurve.cpp"
 				>
 			</File>
@@ -272,6 +276,10 @@
 			</File>
 			<File
 				RelativePath=".\include\GosAudioOut.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\GosBeatDetector.h"
 				>
 			</File>
 			<File

@@ -95,6 +95,11 @@ void AudioIn::sampleChunk(Chunk& c) {
 			c.phase[j][i]		=		out[j][1];
 		}
 	}
+
+	if (beatDetector.hasBeat(c))
+	{
+		printf("Beat detected!\n"); //placeholder
+	}
 }
 
 bool AudioIn::hasNext() const {
