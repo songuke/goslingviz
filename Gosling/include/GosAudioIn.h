@@ -2,6 +2,7 @@
 #define _GOS_AUDIO_IN_
 
 #include "GosMustHave.h"
+#include "GosBeatDetector.h"
 
 #include "FileWvIn.h"
 using namespace stk;
@@ -42,6 +43,8 @@ protected:
 
 	fftw_complex *in, *out;
 	fftw_plan plan;
+
+	BeatDetector beatDetector;
 };
 }
 
