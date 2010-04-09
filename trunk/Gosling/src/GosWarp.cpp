@@ -8,9 +8,9 @@ Timer warpTimer;
 namespace Gos
 {
 Warp::Warp(void)
-: lookup(0), width(0), height(0), timeElapsed(0)
+: lookup(0), width(0), height(0), timeElapsed(0), stepI(1), stepJ(1)
 {
-	nbWarpTypes = 6;
+	nbWarpTypes = 5;
 }
 
 Warp::~Warp(void)
@@ -31,7 +31,7 @@ void Warp::update(int delta) {
 
 	timeElapsed += delta;
 }
-
+/*
 void Warp::setSize(int _width, int _height) {
 	if (this->width == _width && this->height == _height) return;
 	width = _width;
@@ -64,6 +64,13 @@ void Warp::setSize(int _width, int _height) {
 		}
 	}
 
+}*/
+
+void Warp::setGrid(int stepI, int stepJ) {
+	if (this->stepI == stepI && this->stepJ == stepJ) return;
+
+	this->stepI = stepI;
+	this->stepJ = stepJ;
 }
 
 void Warp::render(Image* imageIn, Image* imageOut, Chunk &c, int warpType) {
@@ -72,11 +79,13 @@ void Warp::render(Image* imageIn, Image* imageOut, Chunk &c, int warpType) {
 	//this->setSize(width, height); // construct lookup table if required
 
 	// for every pixel in the output image, find the location in the input image
-	// and perform bilinear sampling
-	int stepI = 1;
-	int stepJ = stepI;
-	imageIn->setGrid(stepI, stepJ);
-	imageOut->setGrid(stepI, stepJ);
+	// and perform bilinear sampling	
+	//imageIn->setGrid(stepI, stepJ);
+	//imageOut->setGrid(stepI, stepJ);
+
+	//imageIn->interpolateAtGrid();
+	//imageOut->copy(imageIn);
+	//return;
 
 	warpTimer.Reset();
 

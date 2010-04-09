@@ -21,12 +21,19 @@ public:
 	virtual void update(int delta);
 	virtual void render(Image* image, Chunk& c, int curveType);
 	int getCurveCount() const;
-
+	void setGrid(int stepI, int stepJ);
+	void setUseMask(bool _useMask);
 protected:
 	int t;		// time elapsed
 	int nbCurveTypes;
 	int curveType;
 	Float2 (*func)(float t, float r, Chunk& c);
+
+	int stepI, stepJ;
+	Image* imageSmall;
+	Image* mask;
+	bool makeImageSmall;
+	bool useMask;
 };
 }
 

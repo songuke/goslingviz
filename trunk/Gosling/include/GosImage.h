@@ -194,7 +194,12 @@ public:
 	Copy pixels from the input image and scale it to current image size.
 	*/
 	void	scaleFrom(Image* im);
-	
+
+	/**
+	Clear the image to 0.
+	*/
+	void	clear();
+
 protected:
 	inline bool Image::isOutOfBound(const Float2& p) {
 		if (p.x < 0 || p.x >= width || p.y < 0 || p.y >= height)
