@@ -199,7 +199,6 @@ public:
 	Clear the image to 0.
 	*/
 	void	clear();
-
 protected:
 	inline bool Image::isOutOfBound(const Float2& p) {
 		if (p.x < 0 || p.x >= width || p.y < 0 || p.y >= height)
@@ -214,6 +213,8 @@ protected:
 	int stepI, stepJ;
 	float* s, *t;			// interpolated coefficients in a grid cell
 	Float2 center;
+
+	Image* tmp;
 };
 }
 

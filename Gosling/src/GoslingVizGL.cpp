@@ -38,8 +38,8 @@ using namespace Renzo;
 //-----------------------------------------------------------------------------
 // Window
 //-----------------------------------------------------------------------------
-int winWidth	=	480;
-int winHeight	=	600;
+int winWidth	=	512;
+int winHeight	=	512;
 
 //-----------------------------------------------------------------------------
 // Audio
@@ -94,8 +94,8 @@ void init() {
 
 	//visualizer = new Oscilloscope();
 	//visualizer = new Spectrogram();
-	//visualizer = new CurveWarp();
-	visualizer = new GlobalVisualizer();
+	visualizer = new CurveWarp();
+	//visualizer = new GlobalVisualizer();
 }
 
 void initAudio() {

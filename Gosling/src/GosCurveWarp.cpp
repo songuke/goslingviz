@@ -8,7 +8,7 @@ int CurveWarp::nextWarpTime = 5000;
 int CurveWarp::drawCurveTime = 500;
 int CurveWarp::nextCurveTime = 5000;
 CurveWarp::CurveWarp(void)
-: imageOut(0), scaledBackground(0), warpType(0), drawCurveTimeElapsed(0), drawCurve(false), nextCurveTimeElapsed(0), curveType(0)
+: imageOut(0), imageTmp(0), scaledBackground(0), warpType(0), drawCurveTimeElapsed(0), drawCurve(false), nextCurveTimeElapsed(0), curveType(0)
 {
 	imageManager = ImageManager::instance();
 	background = imageManager->load("./images/cloud.png");
@@ -93,7 +93,7 @@ void CurveWarp::renderBuffer(Chunk& c, Rect r) {
 		}*/
 	}
 
-	int stepI = 1;
+	int stepI = 4;
 	int stepJ = stepI;
 
 	buffer->setGrid(stepI, stepJ);
@@ -107,6 +107,9 @@ void CurveWarp::renderBuffer(Chunk& c, Rect r) {
 		curve.render(buffer, c, curveType);		
 	}
 
+	// blur out the buffer before warp
+	//this->blur(buffer, imageOut, Float2(stepJ, stepI));
+
 	// warp	
 	warp.setGrid(stepI, stepJ);
 	warp.render(buffer, imageOut, c, warpType);
@@ -114,20 +117,70 @@ void CurveWarp::renderBuffer(Chunk& c, Rect r) {
 	// copy back
 	buffer->copy(imageOut);
 	
-	
 	// draw the curve again	
 	/*
 	if (drawCurve) {
 		printf("Draw curve\n");
 		curve.setUseMask(false);
 		curve.render(buffer, c, curveType);		
-	}*/	
+	}*/
 	
 	if (drawCurve)
 		drawCurve = false;
 
 	if (firstCurveWarp)
 		firstCurveWarp = false;
+}
+
+void CurveWarp::blur(Image* imageIn, Image* imageOut, Float2& kernel) {
+	if (imageTmp) {
+		if (imageTmp->isSameSize(imageIn) == false) {
+			safeDel(imageTmp);
+			imageTmp = imageIn->clone();
+		}
+	} else {
+		imageTmp = imageIn->clone();
+	}
+
+	Float4 sum, color;
+	int width = imageIn->getWidth();
+	int height = imageIn->getHeight();
+	int total = 0;
+	int kh = kernel.y;
+	int kw = kernel.x;
+	for (int i = 0; i < height; ++i) {
+		for (int j = 0; j < width; ++j) {
+			sum = Float4();
+			total = 0;
+			for (int k = -kw; k <= kw; ++k) {
+				int jj = j + k;
+				if (jj < 0) jj = 0;
+				if (jj >= width) jj = width - 1;
+				color = imageIn->getPixel(Float2(jj, i));
+				sum += color;
+				++total;
+			}
+			sum /= total;
+			imageTmp->setPixel(Float2(j, i), sum);
+		}
+	}
+
+	for (int i = 0; i < height; ++i) {
+		for (int j = 0; j < width; ++j) {
+			sum = Float4();
+			total = 0;
+			for (int k = -kh; k <= kh; ++k) {
+				int ii = i + k;
+				if (ii < 0) ii = 0;
+				if (ii >= height) ii = height - 1;
+				color = imageTmp->getPixel(Float2(j, ii));
+				sum += color;
+				++total;
+			}
+			sum /= total;
+			imageOut->setPixel(Float2(j, i), sum);
+		}
+	}
 }
 
 void CurveWarp::onKey(int key) {
