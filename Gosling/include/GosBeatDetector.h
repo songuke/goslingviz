@@ -22,6 +22,8 @@ private:
 	float cMultiplier;
 	float cTranspose;
 	int historySize;
+	int beatLength;
+	int beatLengthCount;
 	std::deque<float> history;
 };
 
