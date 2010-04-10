@@ -4,9 +4,13 @@ namespace Gos
 {
 BeatDetector::BeatDetector()
 {
-	historySize = (int) floor((float) kSampleRate / kChunkSize);
-	cMultiplier = -0.0025714;
+	historySize = (int) floor((float) 2 * kSampleRate / kChunkSize);
+	beatLength = 24;
+	beatLengthCount = 0;
+	//cMultiplier = -0.0025714;
+	cMultiplier = -0.0001;
 	cTranspose = 1.5142857;
+	//cTranspose = 3.0;
 }
 
 BeatDetector::~BeatDetector()
@@ -21,9 +25,12 @@ bool BeatDetector::hasBeat(Chunk &c)
 	if (history.size() > historySize)
 	{
 		history.pop_back();
+		if (beatLengthCount > 0)
+			beatLengthCount--;
 
-		if (currentE > threshold)
+		if (currentE > threshold && beatLengthCount <= 0)
 		{
+			beatLengthCount = beatLength;
 			//printf("%f - %f\n", currentE, threshold); //DEBUG
 			return true;
 		}
@@ -62,8 +69,11 @@ float BeatDetector::calcThreshEnergy()
 		var += pow((history.at(i) - avgE), 2);
 	}
 	var /= history.size();
+	//var = sqrt(var);
 
+	//printf("var %f, avge %f\n", var, avgE); //DEBUG
 	return (cMultiplier * var + cTranspose) * avgE;
+	//return 1.3 * avgE;
 }
 
 }
