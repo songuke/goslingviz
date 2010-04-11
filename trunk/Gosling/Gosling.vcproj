@@ -249,6 +249,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\GosSpectrumCircle.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\GosVisualizer.cpp"
 				>
 			</File>
@@ -356,6 +360,10 @@
 			</File>
 			<File
 				RelativePath=".\include\GosSpectrogram.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\GosSpectrumCircle.h"
 				>
 			</File>
 			<File

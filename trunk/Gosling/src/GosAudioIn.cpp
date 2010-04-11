@@ -96,7 +96,8 @@ void AudioIn::sampleChunk(Chunk& c) {
 		}
 	}
 
-	if (beatDetector.hasBeat(c))
+	c.beat = beatDetector.hasBeat(c);
+	if (c.beat == 2)
 	{
 		printf("Beat detected!\n"); //placeholder
 	}

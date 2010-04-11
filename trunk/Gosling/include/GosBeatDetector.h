@@ -12,7 +12,7 @@ class BeatDetector
 public:
 	BeatDetector();
 	~BeatDetector();
-	bool hasBeat(Chunk& c);
+	int hasBeat(Chunk& c);
 
 private:
 	float calcInstantEnergy(Chunk& c);
