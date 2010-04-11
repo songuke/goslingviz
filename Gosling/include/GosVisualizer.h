@@ -20,6 +20,7 @@ public:
 	};
 
 	virtual void onKey(int key) {}
+	virtual void onBeat() {}
 
 protected:
 	long timeElapsed;

@@ -1,5 +1,7 @@
 #include "GosAudioIn.h"
 #include "GosChunk.h"
+#include "GosVisualizer.h"
+
 #include <cmath>
 
 namespace Gos {
@@ -99,7 +101,10 @@ void AudioIn::sampleChunk(Chunk& c) {
 	c.beat = beatDetector.hasBeat(c);
 	if (c.beat == 2)
 	{
-		printf("Beat detected!\n"); //placeholder
+		// notify all observers
+		for (int i = 0; i < observerVis.size(); ++i) {
+			observerVis[i]->onBeat();
+		}
 	}
 }
 
@@ -114,6 +119,10 @@ int AudioIn::getChannels() const {
 float AudioIn::hamming(int n, int bigN)
 {
 	return 0.54 - 0.46 * cos(2 * PI * n / (bigN - 1));
+}
+
+void AudioIn::observeBeatFor(Visualizer* vis) {
+	observerVis.push_back(vis);
 }
 
 }

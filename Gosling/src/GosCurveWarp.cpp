@@ -27,14 +27,15 @@ void CurveWarp::sleep() {
 void CurveWarp::update(int delta) {
 	warp.update(delta);
 
+	
 	while (timeElapsed > nextWarpTime) {
-		warpType = (warpType + 1) % warp.getWarpCount();		
 		timeElapsed -= nextWarpTime;
 
-		// reset background
-		//if (warpType == 1)
-			//buffer->copy(scaledBackground);
-		printf("Warp changed: %d\n", warpType);
+		// reset background after some time
+		// TODO: blend it to avoid abrupt change.
+		// TODO: randomly choose another background.
+		buffer->copy(scaledBackground);
+		
 	}
 
 	drawCurveTimeElapsed += delta;
@@ -193,6 +194,15 @@ void CurveWarp::onKey(int key) {
 			buffer->copy(scaledBackground);
 			break;
 	}
+}
+
+void CurveWarp::onBeat() {
+	printf("Beat detected!\n"); //placeholder
+
+	// change warp type
+	warpType = (warpType + 1) % warp.getWarpCount();
+	printf("Warp changed: %d\n", warpType);
+
 }
 
 }
