@@ -18,6 +18,7 @@
 
 #include "GosOscilloscope.h"
 #include "GosSpectrogram.h"
+#include "GosSpectrumCircle.h"
 #include "GosCurveWarp.h"
 #include "GosGlobalVisualizer.h"
 #include "RenzoTimer.h"
@@ -69,8 +70,8 @@ void	play();
 
 AudioIn audioIn;
 AudioOut audioOut;
-//const String fileAudio = "music/The_Sad_Rose.wav";
-const String fileAudio = "music/ACDC.wav";
+const String fileAudio = "music/The_Sad_Rose.wav";
+//const String fileAudio = "music/ACDC.wav";
 
 int		audioFrameTime = 0;
 int		visualFrameTime = 0;
@@ -94,7 +95,8 @@ void init() {
 
 	//visualizer = new Oscilloscope();
 	//visualizer = new Spectrogram();
-	visualizer = new CurveWarp();
+	//visualizer = new CurveWarp();
+	visualizer = new SpectrumCircle();
 	//visualizer = new GlobalVisualizer();
 }
 
