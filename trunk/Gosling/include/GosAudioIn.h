@@ -7,6 +7,9 @@
 #include "FileWvIn.h"
 using namespace stk;
 
+#include <vector>
+using namespace std;
+
 namespace Gos {
 class AudioIn
 {
@@ -16,6 +19,7 @@ public:
 
 public:
 	void loadAudio(const String& file);
+	void observeBeatFor(Visualizer* vis);
 
 private:
 	static float hamming(int n, int bigN);
@@ -44,7 +48,8 @@ protected:
 	fftw_complex *in, *out;
 	fftw_plan plan;
 
-	BeatDetector beatDetector;
+	BeatDetector beatDetector;				
+	std::vector<Visualizer*> observerVis;	// the visualizers to notify when a beat is detected.
 };
 }
 

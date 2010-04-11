@@ -47,8 +47,6 @@ namespace Gos
 	const int kSampleRate		= 44100;
 	const int kOutputBufferSize = 4096;
 
-
-
 //-----------------------------------------------------------------------------
 // Guitar model
 //-----------------------------------------------------------------------------
@@ -69,18 +67,22 @@ namespace Gos
 	const int kChunkSize = 1024;
 	const int nbChannels = 2;
 
-//-----------------------------------------------------------------------------
-// OpenGL
-//-----------------------------------------------------------------------------
 	struct Rect { float left, top, right, bottom; };
 	class Image;
+	class ImageManager;
+
 	class Line;
 	class Curve;
 	
+	class Visualizer;
+	class Visualizer2D;
+	class Oscilloscope;
+	class Spectrogram;
+	class SpectrumCircle;
+	class GlobalVisualizer;
 	class CurveWarp;
-	class ImageManager;
 
-
+	class BeatDetector;
 
 //-----------------------------------------------------------------------------
 // Boost definition

@@ -95,15 +95,15 @@ void init() {
 
 	//visualizer = new Oscilloscope();
 	//visualizer = new Spectrogram();
-	//visualizer = new CurveWarp();
-	visualizer = new SpectrumCircle();
+	visualizer = new CurveWarp();
+	//visualizer = new SpectrumCircle();
 	//visualizer = new GlobalVisualizer();
 }
 
 void initAudio() {
 	audioIn.loadAudio(fileAudio);
 	audioOut.setChannels(audioIn.getChannels());
-	
+	audioIn.observeBeatFor(visualizer);
 }
 
 

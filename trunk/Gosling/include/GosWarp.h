@@ -41,13 +41,11 @@ protected:
 		switch(warpType) {
 			case 0: 
 			{	
-				//float v = 0.05f * fDelta;				
-				/*
-				float v = 0.0f;
+				float v = 0.05 * fDelta;
 				Float2 n = p.normalize();
 				q = p - n * v;
-				*/
-				q = p;
+				
+				//q = p;
 			}
 			break;
 

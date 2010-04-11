@@ -18,6 +18,8 @@ public:
 	void update(int delta);
 	void sleep();
 	void onKey(int key);
+	void onBeat();
+
 protected:
 	void renderBuffer(Chunk& c, Rect r);
 	
