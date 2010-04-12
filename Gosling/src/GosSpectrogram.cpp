@@ -18,7 +18,7 @@ void Spectrogram::render(Chunk& c, Rect r)
 	float height	= r.top - r.bottom;	
 	int nbBars		= 32;
 	float logBase	= 2;
-	float logStep	= log((float) kChunkSize / 2) / log(logBase);
+	float logStep	= log((float) kChunkSize) / log(logBase);
 	float gapSize	= width / nbBars * 0.08;
 	float barWidth  = width / nbBars * 0.92;
 	float barHeight	= height;
@@ -40,7 +40,7 @@ void Spectrogram::render(Chunk& c, Rect r)
 		{
 			combined += pow(fabs(c.magnitude[j][0] + c.magnitude[j][1]), 2);
 		}
-		float intensity = std::min(1.0f, combined * 0.01f);
+		float intensity = std::min(1.0f, combined * 0.0001f);
 		Float4 curRed = lime * (1.0f - intensity) + red * intensity;
 		glBegin(GL_QUADS);
 			glColor4f(lime.x, lime.y, lime.z, lime.w); // bottom 

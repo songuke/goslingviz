@@ -45,6 +45,7 @@ protected:
 	unsigned long next;
 	StkFrames* frames;
 
+	Chunk* lastChunk;
 	fftw_complex *in, *out;
 	fftw_plan plan;
 
