@@ -8,7 +8,7 @@ Timer warpTimer;
 namespace Gos
 {
 Warp::Warp(void)
-: lookup(0), width(0), height(0), timeElapsed(0), stepI(1), stepJ(1), imageSmallIn(0), imageSmallOut(0)
+: lookup(0), width(0), height(0), timeElapsed(0), stepI(1), stepJ(1), imageSmallIn(0), imageSmallOut(0), makeSmallImages(false)
 {
 	nbWarpTypes = 5;
 }
@@ -67,8 +67,13 @@ void Warp::setSize(int _width, int _height) {
 }*/
 
 void Warp::render(Image* imageIn, Image* imageOut, int stepI, int stepJ, Chunk &c, int warpType) {
-	
-	//this->setSize(width, height); // construct lookup table if required
+	int imwidth = imageIn->getWidth();
+	int imheight = imageIn->getHeight();
+	if (this->width != imwidth || this->height != imheight) {
+		this->width = imwidth;
+		this->height = imheight;
+		makeSmallImages = true;
+	}
 
 	// for every pixel in the output image, find the location in the input image
 	// and perform bilinear sampling	
@@ -85,14 +90,20 @@ void Warp::render(Image* imageIn, Image* imageOut, int stepI, int stepJ, Chunk &
 		this->stepI = stepI;
 		this->stepJ = stepJ;
 
+		makeSmallImages = true;		
+	}
+
+	if (makeSmallImages) {
 		// make a new temp image
 		safeDel(imageSmallIn);
 		safeDel(imageSmallOut);
 		imageSmallIn = new Image(imageIn->getWidth() / stepJ, imageIn->getHeight() / stepI, imageIn->getChannels());
 		imageSmallOut = new Image(imageIn->getWidth() / stepJ, imageIn->getHeight() / stepI, imageIn->getChannels());
+
+		makeSmallImages = false;
 	}
 
-	if ((stepI == 1 && stepJ == 1)) {
+	if (stepI == 1 && stepJ == 1) {
 		in = imageIn;
 		out = imageOut;
 	} else {
@@ -101,8 +112,10 @@ void Warp::render(Image* imageIn, Image* imageOut, int stepI, int stepJ, Chunk &
 
 		// now down sample the imageIn
 		imageIn->downSample(imageSmallIn);
+		//imageSmallOut->copy(imageSmallIn);
 	}
-
+	
+	
 	// do warp in imageSmall
 	warpTimer.Reset();
 	
@@ -126,9 +139,12 @@ void Warp::render(Image* imageIn, Image* imageOut, int stepI, int stepJ, Chunk &
 	warpTimer.Update();
 	//printf("Warp time: %ld\n", warpTimer.GetTimeElapsed());
 	
+	
+
 	if (! (stepI == 1 && stepJ == 1)) {
 		// up sample from imageSmallOut
 		imageSmallOut->upSample(imageOut);
+		//imageOut->scaleFrom(imageSmallOut);
 	}
 
 	/*

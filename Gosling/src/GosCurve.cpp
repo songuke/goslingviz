@@ -91,6 +91,7 @@ void Curve::render(Image* imageIn, Chunk& c, int curveType) {
 			t1 = 2 *  M_PI;
 			func = &CurveFunc::flower;
 		}
+		break;
 
 		case 3:
 		{
