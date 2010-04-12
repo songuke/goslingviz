@@ -284,16 +284,22 @@ void Image::clear() {
 }
 
 void Image::downSample(Image* im) {
+	// this -> big image
+	// im   -> small image
 	// TODO: now only supports integer step size.
 	int stepI = this->height / im->height;
 	int stepJ = this->width / im->width;
 	float total1 = 1.0f / (stepI * stepJ);
-	for (int i = 0, y = 0; i < width; i += stepI, ++y) {
-		for (int j = 0, x = 0; j < height; j += stepJ, ++x) {
+	for (int i = 0, y = 0; i < height; i += stepI, ++y) {
+		for (int j = 0, x = 0; j < width; j += stepJ, ++x) {
 			Float4 sum;
 			for (int m = 0; m < stepI; ++m) {
+				int ii = i + m;
+				if (ii > height - 1) ii = height - 1;
 				for (int n = 0; n < stepJ; ++n) {
-					sum += this->getPixel(Float2(j + n, i + m));
+					int jj = j + n;										
+					if (jj > width - 1) jj = width - 1;					
+					sum += this->getPixel(Float2(jj, ii));					
 				}
 			}
 			im->setPixel(Float2(x, y), sum * total1);
@@ -302,12 +308,15 @@ void Image::downSample(Image* im) {
 }
 
 void Image::upSample(Image* im) {
+	// this -> small image
+	// im	-> big image
 	// TODO: now only supports integer step size.
-	int w = im->width;
 	int stepI = im->height / this->height;
 	int stepJ = im->width / this->width;	
 	for (int i = 0, y = 0; i < im->height; i += stepI, ++y) {
+		if (y > this->height - 1) y = this->height - 1;
 		for (int j = 0, x = 0; j < im->width; j += stepJ, ++x) {
+			if (x > this->width - 1) x = this->width - 1;
 			im->setPixel(Float2(j, i), this->getPixel(Float2(x, y)));
 		}
 	}

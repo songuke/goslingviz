@@ -99,7 +99,7 @@ void CurveWarp::renderBuffer(Chunk& c, Rect r) {
 			pixels[i] = 255 * (i * 1.0f / bufferSize);
 		}*/
 	}
-
+	
 	// draw a curve when there exists an amplitude that is larger than a threshold
 	for (int i = 0; i < kChunkSize; ++i) {	
 		if (fabs(c.amplitude[i][0]) > thresDrawCurve || fabs(c.amplitude[i][1]) > thresDrawCurve) {			
@@ -111,8 +111,8 @@ void CurveWarp::renderBuffer(Chunk& c, Rect r) {
 	int stepI = 4;
 	int stepJ = stepI;
 
-	buffer->setGrid(stepI, stepJ);
-	imageOut->setGrid(stepI, stepJ);
+	//buffer->setGrid(stepI, stepJ);
+	//imageOut->setGrid(stepI, stepJ);
 
 	// draw a curve	
 	/*

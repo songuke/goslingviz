@@ -15,13 +15,12 @@ public:
 public:
 	void update(int delta);
 	void render(Image* imageIn, Image* imageOut, int stepI, int stepJ, Chunk &c, int warpType);
-	void setSize(int width, int height);
+	//void setSize(int width, int height);
 	//void setGrid(int stepI, int stepJ);
 
 protected:
 	Float2*** lookup;	// lookup table
-	int nbWarpTypes;	// the number of warp types
-	int width, height;
+	int nbWarpTypes;	// the number of warp types	
 
 public:
 	inline int getWarpCount() const {
@@ -137,9 +136,12 @@ protected:
 	int delta;
 	long timeElapsed;
 	int stepI, stepJ;
+	int width, height;			// screen size. Screen size changes causes imageSmallIn and imageSmallOut to change accordingly.
 
 	Image* imageSmallIn;
 	Image* imageSmallOut;
+
+	bool makeSmallImages;
 };
 }
 
