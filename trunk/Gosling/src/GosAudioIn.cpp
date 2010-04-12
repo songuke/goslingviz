@@ -34,9 +34,9 @@ void AudioIn::loadAudio(const String& file) {
 		frames = new StkFrames(kChunkSize, wvIn->channelsOut());
 		
 		// fftw allocation
-		in	= (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * kChunkSize);
-        out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * kChunkSize);
-		plan = fftw_plan_dft_1d(kChunkSize, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
+		in	= (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * kChunkSize * 2);
+        out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * kChunkSize * 2);
+		plan = fftw_plan_dft_1d(kChunkSize * 2, in, out, FFTW_FORWARD, FFTW_ESTIMATE);
 		if (plan == NULL)
 			printf("Null plan!\n");
 
@@ -74,23 +74,43 @@ void AudioIn::sampleChunk(Chunk& c) {
 			}
 		}
 	}
-	// TODO: need overlapping chunks return. They are used for render, but not for audio output
 
 	//
 	// frequency domain
 	//
-	// TODO: use FFTW to transform the chunk to frequency domain. Need overlap chunk.
-	for (int i = 0; i < nbChannels; ++i)
+	for (int i = 0; i < nbChannels; i++)
 	{
-		for (int j = 0; j < kChunkSize; ++j)
+		//fill 1st half of window
+		if (lastChunk != NULL)
 		{
-			in[j][0] = c.amplitude[j][i] * hamming(j, kChunkSize);
+			for (int j=0; j<kChunkSize; j++)
+			{
+				in[j][0] = lastChunk->amplitude[j][i];
+			}
+		}
+		else
+		{
+			for (int j=0; j<kChunkSize; j++)
+			{
+				in[j][0] = 0;
+			}
+		}
+
+		//fill 2nd half of window
+		for (int j=0; j<kChunkSize; j++)
+		{
+			in[j + kChunkSize][0] = c.amplitude[j][i];
+		}
+
+		for (int j=0; j<kChunkSize * 2; j++)
+		{
+			in[j][0] = in[j][0] * hamming(j, kChunkSize * 2);
 		}
 
 		// run fft for each channel
 		fftw_execute(plan);
 
-		// copy results to chunk
+		// copy results to chunk (omit mirrored part)
 		for (int j = 0; j < kChunkSize; ++j)
 		{
 			c.magnitude[j][i]	= fabs(	out[j][0]	);
@@ -98,6 +118,10 @@ void AudioIn::sampleChunk(Chunk& c) {
 		}
 	}
 
+	//retain current chunk for next FFT
+	lastChunk = &c;
+
+	//beat detection
 	c.beat = beatDetector.hasBeat(c);
 	if (c.beat == 2)
 	{

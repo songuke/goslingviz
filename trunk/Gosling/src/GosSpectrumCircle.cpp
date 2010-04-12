@@ -18,7 +18,7 @@ void SpectrumCircle::render(Chunk& c, Rect r)
 	float height	= r.top - r.bottom;	
 	int nbBars		= 32;
 	float logBase	= 2;
-	float logStep	= log((float) kChunkSize / 2) / log(logBase);
+	float logStep	= log((float) kChunkSize) / log(logBase);
 	float centerX	= width / 2;
 	float centerY	= height / 2;
 	float angleStep	= M_PI / nbBars;
@@ -45,7 +45,7 @@ void SpectrumCircle::render(Chunk& c, Rect r)
 		{
 			combined += pow(c.magnitude[j][1], 2);
 		}
-		float intensity = std::min(1.0f, combined * 0.01f);
+		float intensity = std::min(1.0f, combined * 0.0002f);
 		Float4 curRed = lime * (1.0f - intensity) + red * intensity;
 		glBegin(GL_QUADS);
 			glColor4f(lime.x, lime.y, lime.z, lime.w); // bottom 
@@ -63,7 +63,7 @@ void SpectrumCircle::render(Chunk& c, Rect r)
 		{
 			combined += pow(c.magnitude[j][0], 2);
 		}
-		intensity = std::min(1.0f, combined * 0.01f);
+		intensity = std::min(1.0f, combined * 0.0002f);
 		curRed = lime * (1.0f - intensity) + red * intensity;
 		glBegin(GL_QUADS);
 			glColor4f(lime.x, lime.y, lime.z, lime.w); // bottom 
