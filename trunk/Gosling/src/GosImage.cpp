@@ -283,5 +283,36 @@ void Image::clear() {
 	memset(buffer, 0, width * height * channels * sizeof(byte));
 }
 
+void Image::downSample(Image* im) {
+	// TODO: now only supports integer step size.
+	int stepI = this->height / im->height;
+	int stepJ = this->width / im->width;
+	float total1 = 1.0f / (stepI * stepJ);
+	for (int i = 0, y = 0; i < width; i += stepI, ++y) {
+		for (int j = 0, x = 0; j < height; j += stepJ, ++x) {
+			Float4 sum;
+			for (int m = 0; m < stepI; ++m) {
+				for (int n = 0; n < stepJ; ++n) {
+					sum += this->getPixel(Float2(j + n, i + m));
+				}
+			}
+			im->setPixel(Float2(x, y), sum * total1);
+		}
+	}
+}
+
+void Image::upSample(Image* im) {
+	// TODO: now only supports integer step size.
+	int w = im->width;
+	int stepI = im->height / this->height;
+	int stepJ = im->width / this->width;	
+	for (int i = 0, y = 0; i < im->height; i += stepI, ++y) {
+		for (int j = 0, x = 0; j < im->width; j += stepJ, ++x) {
+			im->setPixel(Float2(j, i), this->getPixel(Float2(x, y)));
+		}
+	}
+	im->setGrid(stepI, stepJ);
+	im->interpolateAtGrid();
+}
 
 }

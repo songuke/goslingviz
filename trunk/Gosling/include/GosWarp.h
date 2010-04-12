@@ -14,9 +14,9 @@ public:
 
 public:
 	void update(int delta);
-	void render(Image* imageIn, Image* imageOut, Chunk &c, int warpType);
+	void render(Image* imageIn, Image* imageOut, int stepI, int stepJ, Chunk &c, int warpType);
 	void setSize(int width, int height);
-	void setGrid(int stepI, int stepJ);
+	//void setGrid(int stepI, int stepJ);
 
 protected:
 	Float2*** lookup;	// lookup table
@@ -137,6 +137,9 @@ protected:
 	int delta;
 	long timeElapsed;
 	int stepI, stepJ;
+
+	Image* imageSmallIn;
+	Image* imageSmallOut;
 };
 }
 

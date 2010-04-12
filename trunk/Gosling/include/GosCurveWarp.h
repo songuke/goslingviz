@@ -40,6 +40,7 @@ protected:
 	int curveType;
 	static int nextCurveTime;
 	long nextCurveTimeElapsed;
+	static double thresDrawCurve;
 
 	bool drawCurve;
 	static int drawCurveTime;
