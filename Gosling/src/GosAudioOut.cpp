@@ -40,5 +40,13 @@ void AudioOut::tickChunk(Chunk& c) {
 	wvOut->tick(*frames);
 }
 
+void AudioOut::stop() {
+	wvOut->stop();
+}
+
+void AudioOut::onFileChanged(const String& file) {
+	this->stop();
+}
+
 }
 

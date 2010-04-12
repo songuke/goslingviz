@@ -5,7 +5,7 @@
 
 namespace Gos 
 {
-class Visualizer
+class Visualizer : FileChangedHandler
 {
 public:
 	Visualizer(void);
@@ -20,7 +20,7 @@ public:
 	};
 
 	virtual void onKey(int key) {}
-	virtual void onBeat() {}
+	virtual void onBeat() {}	
 
 protected:
 	long timeElapsed;

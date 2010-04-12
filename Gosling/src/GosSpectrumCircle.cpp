@@ -80,4 +80,7 @@ void SpectrumCircle::render(Chunk& c, Rect r)
 	}
 }
 
+void SpectrumCircle::onFileChanged(const Gos::String &file) {
+}
+
 }

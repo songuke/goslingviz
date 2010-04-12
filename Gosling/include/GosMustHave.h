@@ -84,6 +84,11 @@ namespace Gos
 
 	class BeatDetector;
 
+	class FileChangedHandler {
+	public:
+		virtual void onFileChanged(const String& file) = 0;
+	};
+
 //-----------------------------------------------------------------------------
 // Boost definition
 //-----------------------------------------------------------------------------

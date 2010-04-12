@@ -8,11 +8,12 @@ namespace Gos {
 AudioIn::AudioIn(void)
 : wvIn(0), next(0), frames(0)
 {
-	
+	lastChunk = new Chunk;
 }
 
 AudioIn::~AudioIn(void)
 {
+	safeDel(lastChunk);
 	safeDel(wvIn);
 	safeDel(frames);
 	if (plan != NULL)
@@ -42,6 +43,7 @@ void AudioIn::loadAudio(const String& file) {
 
 		// reset
 		next = 0;		
+		memset(lastChunk, 0, sizeof(Chunk));
 	} catch (boost::exception& x) {
 		FileReadError e;
 		e << ErrnoInfo(errno) << FileNameInfo(file);
@@ -81,20 +83,20 @@ void AudioIn::sampleChunk(Chunk& c) {
 	for (int i = 0; i < nbChannels; i++)
 	{
 		//fill 1st half of window
-		if (lastChunk != NULL)
-		{
+		//if (lastChunk != NULL)		
+		//{
 			for (int j=0; j<kChunkSize; j++)
 			{
 				in[j][0] = lastChunk->amplitude[j][i];
 			}
-		}
-		else
-		{
-			for (int j=0; j<kChunkSize; j++)
-			{
-				in[j][0] = 0;
-			}
-		}
+		//}
+		//else
+		//{
+		//	for (int j=0; j<kChunkSize; j++)
+		//	{
+		//		in[j][0] = 0;
+		//	}
+		//}
 
 		//fill 2nd half of window
 		for (int j=0; j<kChunkSize; j++)
@@ -119,8 +121,9 @@ void AudioIn::sampleChunk(Chunk& c) {
 	}
 
 	//retain current chunk for next FFT
-	lastChunk = &c;
-
+	//lastChunk = &c; // the chunk only last per frame. Need to copy instead of reference.
+	memcpy(lastChunk, &c, sizeof(Chunk));
+	
 	//beat detection
 	c.beat = beatDetector.hasBeat(c);
 	if (c.beat == 2)
@@ -147,6 +150,11 @@ float AudioIn::hamming(int n, int bigN)
 
 void AudioIn::observeBeatFor(Visualizer* vis) {
 	observerVis.push_back(vis);
+}
+
+void AudioIn::onFileChanged(const String& file) {
+	// load new audio and play
+	this->loadAudio(file);
 }
 
 }

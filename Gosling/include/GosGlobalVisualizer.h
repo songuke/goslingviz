@@ -22,6 +22,7 @@ public:
 	void render(Chunk& c, Rect r);
 	void sleep(); 
 	void onKey(int key);
+	void onFileChanged(const String& file);
 
 protected:
 	Oscilloscope osc;

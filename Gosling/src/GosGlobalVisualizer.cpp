@@ -57,4 +57,10 @@ void GlobalVisualizer::render(Chunk& c, Rect r) {
 	glPopMatrix();
 }
 
+void GlobalVisualizer::onFileChanged(const Gos::String &file) {
+	osc.onFileChanged(file);
+	vis2d.onFileChanged(file);
+	spec.onFileChanged(file);
+}
+
 }

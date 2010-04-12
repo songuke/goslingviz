@@ -55,4 +55,7 @@ void Spectrogram::render(Chunk& c, Rect r)
 	}
 }
 
+void Spectrogram::onFileChanged(const Gos::String &file) {
+}
+
 }
