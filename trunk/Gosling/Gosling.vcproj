@@ -201,6 +201,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\GosFileManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\GosGlobalVisualizer.cpp"
 				>
 			</File>
@@ -304,6 +308,10 @@
 			</File>
 			<File
 				RelativePath=".\include\GosExcitation.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\GosFileManager.h"
 				>
 			</File>
 			<File

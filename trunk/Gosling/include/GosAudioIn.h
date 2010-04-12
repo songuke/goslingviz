@@ -3,6 +3,7 @@
 
 #include "GosMustHave.h"
 #include "GosBeatDetector.h"
+#include "GosChunk.h"
 
 #include "FileWvIn.h"
 using namespace stk;
@@ -11,7 +12,7 @@ using namespace stk;
 using namespace std;
 
 namespace Gos {
-class AudioIn
+class AudioIn : FileChangedHandler
 {
 public:
 	AudioIn(void);
@@ -40,12 +41,15 @@ public:
 	bool	hasNext() const;
 
 	int		getChannels() const;
+
+	void	onFileChanged(const String& file);
 protected:
 	FileWvIn* wvIn;
 	unsigned long next;
 	StkFrames* frames;
 
 	Chunk* lastChunk;
+
 	fftw_complex *in, *out;
 	fftw_plan plan;
 

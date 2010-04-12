@@ -91,4 +91,7 @@ void Oscilloscope::renderChunk(Chunk& c, Rect r, float alpha) {
 	glEnd();
 }
 
+void Oscilloscope::onFileChanged(const Gos::String &file) {
+}
+
 }

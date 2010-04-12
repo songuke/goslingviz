@@ -9,7 +9,7 @@ namespace Gos
 int CurveWarp::nextWarpTime = 5000;
 int CurveWarp::drawCurveTime = 500;
 int CurveWarp::nextCurveTime = 5000;
-double CurveWarp::thresDrawCurve = 0.4;
+double CurveWarp::thresDrawCurve = 0.1;
 
 CurveWarp::CurveWarp(void)
 : imageOut(0), imageTmp(0), scaledBackground(0), warpType(0), drawCurveTimeElapsed(0), drawCurve(false), nextCurveTimeElapsed(0), curveType(0)
@@ -221,6 +221,11 @@ void CurveWarp::onBeat() {
 	// also random a curve type
 	curveType = randomInteger(0, curve.getCurveCount() - 1);
 
+}
+
+void CurveWarp::onFileChanged(const String& file) {
+	if (buffer)
+		buffer->clear();
 }
 
 }

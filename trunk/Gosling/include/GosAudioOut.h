@@ -7,7 +7,7 @@
 using namespace stk;
 
 namespace Gos {
-class AudioOut
+class AudioOut : public FileChangedHandler
 {
 public:
 	AudioOut(void);
@@ -26,6 +26,8 @@ public:
 	*/
 	void tickChunk(Chunk& c);
 
+	void stop();
+	void onFileChanged(const String& file);
 protected:
 	int			channels;
 	RtWvOut*	wvOut;

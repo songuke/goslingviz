@@ -19,6 +19,7 @@ public:
 	void sleep();
 	void onKey(int key);
 	void onBeat();
+	void onFileChanged(const String& file);
 
 protected:
 	void renderBuffer(Chunk& c, Rect r);

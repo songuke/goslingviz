@@ -16,6 +16,8 @@
 #include "GosAudioIn.h"
 #include "GosAudioOut.h"
 
+#include "GosFileManager.h"
+
 #include "GosOscilloscope.h"
 #include "GosSpectrogram.h"
 #include "GosSpectrumCircle.h"
@@ -25,11 +27,6 @@
 
 using namespace Gos;
 using namespace Renzo;
-
-/**
- AntTweakBar library to make a simple UI for parameter tweak.
- */
-#include <AntTweakBar/AntTweakBar.h>
 
 /**
  Boost.Thread library
@@ -45,41 +42,42 @@ int winHeight	=	512;
 //-----------------------------------------------------------------------------
 // Audio
 //-----------------------------------------------------------------------------
-Chunk chunk;
+Chunk* chunk;
 boost::mutex mutexChunk;		// for thread safe read/write to chunk
 bool	isPlaying = false;
 
 //-----------------------------------------------------------------------------
 // Rendering
 //-----------------------------------------------------------------------------
-TwBar *bar;						// pointer to the tweak bar
 float zNear = -320.0f;
 float zFar  = 320.0f;
 Visualizer* visualizer = 0;
 Rect		rectVis;			// visualization rect in the window
 
 Timer timer;
+
+//-----------------------------------------------------------------------------
+// Audio
+//-----------------------------------------------------------------------------
+AudioIn audioIn;
+AudioOut audioOut;
+String fileAudio;
+
+// playback control
+int			audioFrameTime		= 0;
+int			visualFrameTime		= 0;
+const float	audioFPS			= kSampleRate / kChunkSize;
+const int	idealFrameTime		= 1000 / audioFPS;
+Timer		audioTimer;
+Timer		visualTimer;
+FileManager fileManager;
 //-----------------------------------------------------------------------------
 // Forward declaration
 //-----------------------------------------------------------------------------
 void	renderString(float x, float y, 
 					 void *font, const char* string, Float4 const& rgb);
-int		loadAntTweakBar();
 void	play();
 
-
-AudioIn audioIn;
-AudioOut audioOut;
-const String fileAudio = "music/The_Sad_Rose.wav";
-//const String fileAudio = "music/ACDC.wav";
-
-int		audioFrameTime = 0;
-int		visualFrameTime = 0;
-const float	audioFPS = kSampleRate / kChunkSize;
-int		idealFrameTime = 1000 / audioFPS;
-
-Timer	audioTimer;
-Timer	visualTimer;
 //-----------------------------------------------------------------------------
 /**
  Initialization. Called once when OpenGL starts.
@@ -87,85 +85,61 @@ Timer	visualTimer;
 void init() {
 	//
 	// AntTweakBar
-	//
-	/*
-	if (loadAntTweakBar() != 0) {
-		throw std::exception("AntTweakBar failed to load.");
-	}*/
+	//	
+	fileManager.init();
+	// add files
+	//fileManager.addFile("music/The_Sad_Rose.wav");
+	//fileManager.addFile("music/classical.wav");
+	fileManager.addPlaylist("music/playlist.txt");
+	fileManager.loadFileListToTweakBar();
+
+	chunk = new Chunk();
+	//audioIn.loadAudio(fileAudio);
+	//audioOut.setChannels(audioIn.getChannels());
+	audioOut.setChannels(2);
+	fileManager.observerFileChangedFor((FileChangedHandler*)&audioIn);
 
 	//visualizer = new Oscilloscope();
 	//visualizer = new Spectrogram();
-	visualizer = new CurveWarp();
+	visualizer = new CurveWarp();	
+	audioIn.observeBeatFor(visualizer);
+	fileManager.observerFileChangedFor((FileChangedHandler*)visualizer);
 	//visualizer = new SpectrumCircle();
 	//visualizer = new GlobalVisualizer();
 }
 
-void initAudio() {
-	audioIn.loadAudio(fileAudio);
-	audioOut.setChannels(audioIn.getChannels());
-	audioIn.observeBeatFor(visualizer);
-}
-
 
 void cleanUp() {
+	safeDel(chunk);
 	safeDel(visualizer);
-}
-
-
-/**
- Do necessary initialization to AntTweakBar library.
- */
-int loadAntTweakBar() {
-	// Initialize AntTweakBar
-    // (note that AntTweakBar could also be intialized after GLUT, no matter)
-    if( !TwInit(TW_OPENGL, NULL) )
-    {
-        // A fatal error occured    
-        fprintf(stderr, "AntTweakBar initialization failed: %s\n", TwGetLastError());
-        return 1;
-    }
-	// - Send 'glutGetModifers' function pointer to AntTweakBar;
-    //   required because the GLUT key event functions do not report key modifiers states.
-    TwGLUTModifiersFunc(glutGetModifiers);
-
-    // Create a tweak bar
-    bar = TwNewBar("TweakBar");
-    //TwDefine(" GLOBAL help='' "); // Message added to the help bar.
-    TwDefine(" TweakBar size='280 440' color='128 128 128' "); // change default tweak bar size and color
-
-	return 0;
 }
 
 // callback function called by GLUT to render screen
 void display(void)
 {
 	// timer update
-	int delta = timer.Update();
+	int delta = timer.Update();	
+
+	// clear frame buffer
+	glClearColor(0, 0, 0, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	visualTimer.Reset();
 	visualTimer.Update();
-
-    // clear frame buffer
-    glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // draw tweak bars
-    //TwDraw();
-
-	// visualization	
-	//mutexChunk.lock();
-	try {
-		visualizer->update(delta);
-		visualizer->render(chunk, rectVis);
-	} catch (std::exception& e) {
-		printf("Exception: %s\n", e.what());
+	if (isPlaying) {
+		// visualization	
+		try {
+			visualizer->update(delta);
+			visualizer->render(*chunk, rectVis);
+		} catch (std::exception& e) {
+			printf("Exception: %s\n", e.what());
+		}
 	}
-	//mutexChunk.unlock();
-	
 	visualTimer.Update();
 	visualFrameTime = visualTimer.GetTimeElapsed();
 
-	// the visualizer skips a few frames, as our eyes are not that fast to see visualization every frame.
-	//visualizer->sleep();
+	// render file list
+	fileManager.render();
 
 	// draw FPS
 	char fps[16];
@@ -174,12 +148,9 @@ void display(void)
 
     // present frame buffer
     glutSwapBuffers();
-
-    // recall Display at next frame
-    //glutPostRedisplay();
 }
 
-void idle() {
+void idle() {	
 	audioTimer.Reset();
 	audioTimer.Update();
 	// play audio first
@@ -187,17 +158,19 @@ void idle() {
 		if (audioIn.hasNext()) {
 			// get a chunk
 			//mutexChunk.lock();
-			audioIn.sampleChunk(chunk);		
+			audioIn.sampleChunk(*chunk);		
 			//mutexChunk.unlock();
 
 			// send to output
-			audioOut.tickChunk(chunk);
+			audioOut.tickChunk(*chunk);
 			
 			// sleep
 			//sleepMiliseconds(1);
 		} else {
 			isPlaying = false;
 		}
+	} else {
+		audioOut.stop();
 	}
 	audioTimer.Update();
 	audioFrameTime = audioTimer.GetTimeElapsed();
@@ -209,6 +182,7 @@ void idle() {
 	else
 		//visualFrameTime -= audioFrameTime;
 		visualFrameTime = 0;
+
 	// sleep
 	sleepMiliseconds(1);
 }
@@ -266,48 +240,47 @@ void reshape(int width, int height)
 	rectVis.top		= winHeight;
 	rectVis.bottom	= 0.0f;
 
-    // Send the new window size to AntTweakBar
-    //TwWindowSize(width, height);
+	fileManager.onResize(width, height);
 }
 
 void mouse(int button, int state, int x, int y) {
+	fileManager.onMouse(button, state, x, y);
 }
 
 void motion(int x, int y) {
+	fileManager.onMotion(x, y);
 }
 
 void passiveMotion(int x, int y) {
+	fileManager.onPassiveMotion(x, y);
 }
-
 
 void keyboard(unsigned char key, int x, int y) {
 	switch (key) {
 		case ' ':
-			play();
+			isPlaying = 1 - isPlaying;
 			break;		
 	}
 	visualizer->onKey(key);
+	fileManager.onKeyboard(key, x, y);
 }
 
 void special(int key, int x, int y) {
+	fileManager.onSpecial(key, x, y);
 }
 
 // function called at exit
 void termination(void)
 { 
-    //TwTerminate();
-}
-
-void mainAudio() {
-	
+	fileManager.onTerminate();  
 }
 
 void play() {
-	if (isPlaying) return;
+	//if (isPlaying) return;
 
-	isPlaying = true;
+	//isPlaying = true;
 	// use Boost.Thread to create a thread for audio playback
-	boost::thread threadAudio(mainAudio);
+	//boost::thread threadAudio(mainAudio);
 }
 
 void printUsage() {
@@ -345,8 +318,7 @@ int main(int argc, char *argv[])
 	srand(time(NULL));
 
 	// initialize
-	init();
-	initAudio();
+	init();	
 
     // call the GLUT main loop
     glutMainLoop();
