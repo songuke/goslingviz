@@ -152,6 +152,16 @@ void AudioIn::observeBeatFor(Visualizer* vis) {
 	observerVis.push_back(vis);
 }
 
+void AudioIn::removeObserveBeatFor(Visualizer* vis) {
+	VisualizerList::iterator i;
+	for (i = observerVis.begin(); i != observerVis.end(); ++i) {
+		if (*i == vis) {
+			break;
+		}
+	}
+	observerVis.erase(i);
+}
+
 void AudioIn::onFileChanged(const String& file) {
 	// load new audio and play
 	this->loadAudio(file);

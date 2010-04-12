@@ -77,7 +77,7 @@ FileManager fileManager;
 void	renderString(float x, float y, 
 					 void *font, const char* string, Float4 const& rgb);
 void	play();
-
+void	initVisualizer();
 //-----------------------------------------------------------------------------
 /**
  Initialization. Called once when OpenGL starts.
@@ -98,16 +98,25 @@ void init() {
 	//audioOut.setChannels(audioIn.getChannels());
 	audioOut.setChannels(2);
 	fileManager.observerFileChangedFor((FileChangedHandler*)&audioIn);
-
-	//visualizer = new Oscilloscope();
-	//visualizer = new Spectrogram();
-	visualizer = new CurveWarp();	
-	audioIn.observeBeatFor(visualizer);
-	fileManager.observerFileChangedFor((FileChangedHandler*)visualizer);
-	//visualizer = new SpectrumCircle();
-	//visualizer = new GlobalVisualizer();
+	
+	visualizer = new CurveWarp();		
+	initVisualizer();
 }
 
+void initVisualizer() {
+	if (visualizer) {
+		audioIn.observeBeatFor(visualizer);
+		fileManager.observerFileChangedFor((FileChangedHandler*)visualizer);
+	}
+}
+
+void removeVisualizer() {
+	if (visualizer) {
+		audioIn.removeObserveBeatFor(visualizer);
+		fileManager.removeObserveFileChangedFor((FileChangedHandler*)visualizer);
+		safeDel(visualizer);
+	}
+}
 
 void cleanUp() {
 	safeDel(chunk);
@@ -255,12 +264,41 @@ void passiveMotion(int x, int y) {
 	fileManager.onPassiveMotion(x, y);
 }
 
-void keyboard(unsigned char key, int x, int y) {
+void keyboard(unsigned char key, int x, int y) {	
+	// key to change visualizer
+	if (key >= '1' && key <= '5') {
+		// remove current visualizer
+		removeVisualizer();
+
+		switch (key) {
+		case '1':
+			visualizer = new Oscilloscope();
+			break;
+		case '2':
+			visualizer = new Spectrogram();
+			break;
+		case '3':
+			visualizer = new SpectrumCircle();
+			break;
+		case '4':
+			visualizer = new CurveWarp();
+			break;
+		case '5':
+			visualizer = new GlobalVisualizer();
+			break;
+		}
+
+		initVisualizer();
+		return;
+	}
+
+	// other keys
 	switch (key) {
 		case ' ':
 			isPlaying = 1 - isPlaying;
-			break;		
+			break;				
 	}
+		
 	visualizer->onKey(key);
 	fileManager.onKeyboard(key, x, y);
 }

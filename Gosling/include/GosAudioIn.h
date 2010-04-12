@@ -21,6 +21,7 @@ public:
 public:
 	void loadAudio(const String& file);
 	void observeBeatFor(Visualizer* vis);
+	void removeObserveBeatFor(Visualizer* vis);
 
 private:
 	static float hamming(int n, int bigN);
@@ -54,7 +55,8 @@ protected:
 	fftw_plan plan;
 
 	BeatDetector beatDetector;				
-	std::vector<Visualizer*> observerVis;	// the visualizers to notify when a beat is detected.
+	typedef std::vector<Visualizer*> VisualizerList;
+	VisualizerList	observerVis;	// the visualizers to notify when a beat is detected.
 };
 }
 

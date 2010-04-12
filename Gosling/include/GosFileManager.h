@@ -45,7 +45,8 @@ public:
 	/**
 	Register an object to notify when the playing music file is changed.
 	*/
-	void FileManager::observerFileChangedFor(FileChangedHandler* in);
+	void observerFileChangedFor(FileChangedHandler* in);
+	void removeObserveFileChangedFor(FileChangedHandler* in);
 protected:
 	TwBar *bar;						// pointer to the tweak bar
 	int		loadAntTweakBar();
@@ -54,7 +55,8 @@ protected:
 	std::vector<char*> filesNamePtr;
 	TwEnumVal* filesEV;
 	int curFileIndex, lastFileIndex;
-	std::vector<FileChangedHandler*> fileChangedObservers;
+	typedef std::vector<FileChangedHandler*> FileChangedHandlerList;
+	FileChangedHandlerList fileChangedObservers;
 };
 }
 
