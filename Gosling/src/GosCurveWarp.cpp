@@ -1,12 +1,16 @@
+#include "GosMustHave.h"
 #include "GosCurveWarp.h"
 #include "GosImageManager.h"
 #include "GosImage.h"
+#include "GosChunk.h"
 
 namespace Gos
 {
 int CurveWarp::nextWarpTime = 5000;
 int CurveWarp::drawCurveTime = 500;
 int CurveWarp::nextCurveTime = 5000;
+double CurveWarp::thresDrawCurve = 0.4;
+
 CurveWarp::CurveWarp(void)
 : imageOut(0), imageTmp(0), scaledBackground(0), warpType(0), drawCurveTimeElapsed(0), drawCurve(false), nextCurveTimeElapsed(0), curveType(0)
 {
@@ -38,12 +42,14 @@ void CurveWarp::update(int delta) {
 		
 	}
 
+	/*
 	drawCurveTimeElapsed += delta;
 	while (drawCurveTimeElapsed > drawCurveTime) {
 		drawCurveTimeElapsed -= drawCurveTime;
 		drawCurve = true;
-	}
-
+	}*/
+	//
+	
 	nextCurveTimeElapsed += delta;
 	if (nextCurveTimeElapsed > nextCurveTime) {
 		nextCurveTimeElapsed -= nextCurveTime;
@@ -94,6 +100,14 @@ void CurveWarp::renderBuffer(Chunk& c, Rect r) {
 		}*/
 	}
 
+	// draw a curve when there exists an amplitude that is larger than a threshold
+	for (int i = 0; i < kChunkSize; ++i) {	
+		if (fabs(c.amplitude[i][0]) > thresDrawCurve || fabs(c.amplitude[i][1]) > thresDrawCurve) {			
+			drawCurve = true;
+			break;
+		}
+	}
+	
 	int stepI = 4;
 	int stepJ = stepI;
 
@@ -101,30 +115,31 @@ void CurveWarp::renderBuffer(Chunk& c, Rect r) {
 	imageOut->setGrid(stepI, stepJ);
 
 	// draw a curve	
+	/*
 	if (drawCurve) {
 		printf("Draw curve\n");
-		curve.setUseMask(true);
-		curve.setGrid(stepI, stepJ);
+		curve.setUseMask(false);
+		//curve.setGrid(stepI, stepJ);
 		curve.render(buffer, c, curveType);		
-	}
+	}*/
 
 	// blur out the buffer before warp
 	//this->blur(buffer, imageOut, Float2(stepJ, stepI));
 
 	// warp	
-	warp.setGrid(stepI, stepJ);
-	warp.render(buffer, imageOut, c, warpType);
+	//warp.setGrid(stepI, stepJ);
+	warp.render(buffer, imageOut, stepI, stepJ, c, warpType);
 
 	// copy back
 	buffer->copy(imageOut);
 	
 	// draw the curve again	
-	/*
+	
 	if (drawCurve) {
 		printf("Draw curve\n");
 		curve.setUseMask(false);
 		curve.render(buffer, c, curveType);		
-	}*/
+	}
 	
 	if (drawCurve)
 		drawCurve = false;
@@ -202,6 +217,9 @@ void CurveWarp::onBeat() {
 	// change warp type
 	warpType = (warpType + 1) % warp.getWarpCount();
 	printf("Warp changed: %d\n", warpType);
+
+	// also random a curve type
+	curveType = randomInteger(0, curve.getCurveCount() - 1);
 
 }
 

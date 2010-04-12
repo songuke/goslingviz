@@ -73,6 +73,10 @@ namespace Gos
 		return (1.0 * rand() / RAND_MAX) * (_max - _min) + _min;
 	}
 
+	inline int randomInteger(int _min, int _max) {
+		return rand() % (_max - _min + 1) + _min;
+	}
+
 	inline double log2(double x) {
 		return log(x) / log(2.0);
 	}

@@ -8,7 +8,7 @@ Timer warpTimer;
 namespace Gos
 {
 Warp::Warp(void)
-: lookup(0), width(0), height(0), timeElapsed(0), stepI(1), stepJ(1)
+: lookup(0), width(0), height(0), timeElapsed(0), stepI(1), stepJ(1), imageSmallIn(0), imageSmallOut(0)
 {
 	nbWarpTypes = 5;
 }
@@ -66,16 +66,8 @@ void Warp::setSize(int _width, int _height) {
 
 }*/
 
-void Warp::setGrid(int stepI, int stepJ) {
-	if (this->stepI == stepI && this->stepJ == stepJ) return;
-
-	this->stepI = stepI;
-	this->stepJ = stepJ;
-}
-
-void Warp::render(Image* imageIn, Image* imageOut, Chunk &c, int warpType) {
-	int width = imageOut->getWidth();
-	int height = imageOut->getHeight();
+void Warp::render(Image* imageIn, Image* imageOut, int stepI, int stepJ, Chunk &c, int warpType) {
+	
 	//this->setSize(width, height); // construct lookup table if required
 
 	// for every pixel in the output image, find the location in the input image
@@ -86,33 +78,65 @@ void Warp::render(Image* imageIn, Image* imageOut, Chunk &c, int warpType) {
 	//imageIn->interpolateAtGrid();
 	//imageOut->copy(imageIn);
 	//return;
+	
+	Image* in, *out;
 
+	if (! (this->stepI == stepI && this->stepJ == stepJ)) {
+		this->stepI = stepI;
+		this->stepJ = stepJ;
+
+		// make a new temp image
+		safeDel(imageSmallIn);
+		safeDel(imageSmallOut);
+		imageSmallIn = new Image(imageIn->getWidth() / stepJ, imageIn->getHeight() / stepI, imageIn->getChannels());
+		imageSmallOut = new Image(imageIn->getWidth() / stepJ, imageIn->getHeight() / stepI, imageIn->getChannels());
+	}
+
+	if ((stepI == 1 && stepJ == 1)) {
+		in = imageIn;
+		out = imageOut;
+	} else {
+		in = imageSmallIn;
+		out = imageSmallOut;
+
+		// now down sample the imageIn
+		imageIn->downSample(imageSmallIn);
+	}
+
+	// do warp in imageSmall
 	warpTimer.Reset();
+	
+	int width = out->getWidth();
+	int height = out->getHeight();
 
-	Float2 s(stepJ, stepI);
-	Float2 s_rep(1.0f / stepJ, 1.0f / stepI);
-	for (int i = 0; i < height; i += stepI) {
-		for (int j = 0; j < width; j += stepJ) {
+	//Float2 s(stepJ, stepI);
+	//Float2 s_rep(1.0f / stepJ, 1.0f / stepI);
+	for (int i = 0; i < height; ++i) {
+		for (int j = 0; j < width; ++j) {
 			Float2 u(j, i);
-			Float2 p = imageOut->transformCenter(u);
+			Float2 p = out->transformCenter(u);
 			Float2 q = warp(p, warpType);
 			//Float2 q = warp(p * s_rep, warpType) * s;
-			Float2 v = imageIn->transformLowerLeft(q);
-
-			//v = imageIn->clamp(v);
-
-			Float4 color = imageIn->getPixelBilinear(v);
+			Float2 v = in->transformLowerLeft(q);
+			Float4 color = in->getPixelBilinear(v);
 			
-			imageOut->setPixel(u, color);
+			out->setPixel(u, color);
 		}
 	}
 	warpTimer.Update();
 	//printf("Warp time: %ld\n", warpTimer.GetTimeElapsed());
 	
+	if (! (stepI == 1 && stepJ == 1)) {
+		// up sample from imageSmallOut
+		imageSmallOut->upSample(imageOut);
+	}
+
+	/*
 	warpTimer.Reset();
 	if (stepI > 1)
 		imageOut->interpolateAtGrid();
 	warpTimer.Update();
+	*/
 	//printf("Up sampling time: %ld\n", warpTimer.GetTimeElapsed());
 }
 

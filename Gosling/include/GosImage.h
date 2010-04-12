@@ -5,6 +5,13 @@
 
 namespace Gos
 {
+
+/**
+TODO: 
+Pixel is sampled at its center (0.5, 0.5). 
+For simplicity, user only uses integer coordinates from (0, 0) to (h - 1, w - 1). 
+Pixel sampling is done internally in this Image class.
+*/
 class Image
 {
 public:
@@ -189,6 +196,17 @@ public:
 	*/
 	void	setGrid(int stepI, int stepJ);
 	void	interpolateAtGrid();
+
+
+	/**
+	Down sample the current image by stepI and stepJ to im.
+	*/
+	void	downSample(Image* im);
+
+	/**
+	Up sample the current image by stepI and stepJ to im.
+	*/
+	void	upSample(Image* im);
 
 	/**
 	Copy pixels from the input image and scale it to current image size.

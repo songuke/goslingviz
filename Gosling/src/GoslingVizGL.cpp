@@ -341,6 +341,9 @@ int main(int argc, char *argv[])
     // called after glutMainLoop ends
 	atexit(termination);  
 	
+	// prepare a random generator
+	srand(time(NULL));
+
 	// initialize
 	init();
 	initAudio();
