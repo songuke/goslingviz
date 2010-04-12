@@ -79,6 +79,16 @@ void FileManager::observerFileChangedFor(FileChangedHandler* in) {
 	fileChangedObservers.push_back(in);
 }
 
+void FileManager::removeObserveFileChangedFor(FileChangedHandler* in) {
+	FileChangedHandlerList::iterator i;
+	for (i = fileChangedObservers.begin(); i != fileChangedObservers.end(); ++i) {
+		if (*i == in) {
+			break;
+		}
+	}
+	fileChangedObservers.erase(i);
+}
+
 void FileManager::onMouse(int button, int state, int x, int y) {
 	TwEventMouseButtonGLUT(button, state, x, y);
 }
