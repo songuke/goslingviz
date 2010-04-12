@@ -42,7 +42,7 @@ public:
 	static inline Float2 oscilloscope(float t, float a, Chunk& c) {
 		Float2 q;
 		q.x = 2*t - 1;
-		int index = t * kChunkSize;
+		int index = t * (kChunkSize - 1);
 		q.y = 0.4f * c.amplitude[index][0];
 		return q;
 	}
