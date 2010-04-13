@@ -14,12 +14,9 @@ public:
 
 public:
 	void update(int delta);
-	void render(Image* imageIn, Image* imageOut, int stepI, int stepJ, Chunk &c, int warpType);
-	//void setSize(int width, int height);
-	//void setGrid(int stepI, int stepJ);
+	void render(Image* imageIn, Image* imageOut, int stepI, int stepJ, Chunk &c, int warpType);	
 
-protected:
-	Float2*** lookup;	// lookup table
+protected:	
 	int nbWarpTypes;	// the number of warp types	
 
 public:
@@ -27,13 +24,6 @@ public:
 		return nbWarpTypes;
 	}
 protected:
-	/*
-	inline Float2 Warp::warp(Float2 p, int warpType) {
-		return lookup[warpType][(int)p.y][(int)p.x];
-	}
-	*/
-
-	//inline Float2 Warp::_warp(Float2 p, int warpType) {
 	inline Float2 Warp::warp(Float2 p, int warpType, float maxAmp) {
 		Float2 q;
 		float fDelta = delta * 0.01f;
@@ -152,9 +142,7 @@ protected:
 		return q;		
 	}
 
-protected:
-	//long timeElapsed;	
-	//int warpType;
+protected:	
 	int delta;
 	long timeElapsed;
 	int stepI, stepJ;

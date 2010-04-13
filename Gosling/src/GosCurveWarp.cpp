@@ -88,22 +88,8 @@ void CurveWarp::renderBuffer(Chunk& c, Rect r) {
 	imageOut = t;
 
 	// background
-	if (firstCurveWarp) {
-		//byte* pixels	= buffer->getPixels();
-		//int width		= buffer->getWidth();
-		//int height		= buffer->getHeight();
-		//int bufferSize = width * height * 3;	
-	
-		
-		// TODO: make buffer adapt to background size by adding a scale function and interpolation to image.
-		// e.g., scaleTo(Size, Image* imageOut);
-		//buffer->copy(background);		
+	if (firstCurveWarp) {		
 		buffer->copy(scaledBackground);
-
-		/*
-		for (int i = 0; i < bufferSize; ++i) {
-			pixels[i] = 255 * (i * 1.0f / bufferSize);
-		}*/
 	}
 	
 	// draw a curve when there exists an amplitude that is larger than a threshold
@@ -136,14 +122,12 @@ void CurveWarp::renderBuffer(Chunk& c, Rect r) {
 	// warp	
 	//warp.setGrid(stepI, stepJ);
 	//warp.render(buffer, imageOut, stepI, stepJ, c, warpType);
-
 	warp.render(imageOut, buffer, stepI, stepJ, c, warpType);
 
 	// copy back
 	//buffer->copy(imageOut);
 	
 	// draw the curve again	
-	
 	if (drawCurve) {
 		//printf("Draw curve\n");
 		//curve.setUseMask(false);
@@ -156,31 +140,7 @@ void CurveWarp::renderBuffer(Chunk& c, Rect r) {
 	if (firstCurveWarp)
 		firstCurveWarp = false;
 }
-/*
-void CurveWarp::render(Chunk& c, Rect r) {
-	// prepare render buffer
-	float width		= r.right - r.left;
-	float height	= r.top - r.bottom;	
-	this->setBufferSize((int)width, (int)height);
-	if (buffer == 0) {
-		throw std::exception("Render buffer null.\n");
-	}
 
-	// render to buffer
-	this->renderBuffer(c, r);
-
-	// render buffer to screen using OpenGL glDrawPixels function
-	glPushAttrib(GL_ENABLE_BIT);
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_BLEND);
-	glDisable(GL_LIGHTING);
-	glRasterPos2f(0, 0);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glDrawPixels(width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer->getPixels());
-	glPopAttrib();
-}
-*/
 void CurveWarp::blur(Image* imageIn, Image* imageOut, Float2& kernel) {
 	if (imageTmp) {
 		if (imageTmp->isSameSize(imageIn) == false) {
@@ -245,16 +205,12 @@ void CurveWarp::onKey(int key) {
 }
 
 void CurveWarp::onBeat() {
-	//printf("Beat detected!\n"); //placeholder
-
-	// change warp type
-	//warpType = (warpType + 1) % warp.getWarpCount();
 	warpType = randomInteger(0, warp.getWarpCount() - 1);
-	//printf("Warp changed: %d\n", warpType);
-
+	
 	// also random a curve type
 	curveType = randomInteger(0, curve.getCurveCount() - 1);
 	curve.setCurveType(curveType);
+	
 	// can blend it a little background if needed.
 	//buffer->blend(scaledBackground, 0.1f);
 }

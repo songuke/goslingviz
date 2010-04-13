@@ -35,8 +35,7 @@ public:
 
 	/**
 	Return a chunk of samples at a time
-	*/
-	//void	tickChunk();
+	*/	
 	void	sampleChunk(Chunk& c);
 
 	bool	hasNext() const;

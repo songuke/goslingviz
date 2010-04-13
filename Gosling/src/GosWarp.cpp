@@ -9,13 +9,14 @@ Timer warpTimer;
 namespace Gos
 {
 Warp::Warp(void)
-: lookup(0), width(0), height(0), timeElapsed(0), stepI(1), stepJ(1), imageSmallIn(0), imageSmallOut(0), makeSmallImages(false)
+: width(0), height(0), timeElapsed(0), stepI(1), stepJ(1), imageSmallIn(0), imageSmallOut(0), makeSmallImages(false)
 {
 	nbWarpTypes = 6;
 }
 
 Warp::~Warp(void)
 {
+	/*
 	if (lookup) {
 		for (int k = 0; k < nbWarpTypes; ++k) {
 			for (int i = 0; i < height; ++i) {
@@ -24,7 +25,7 @@ Warp::~Warp(void)
 			safeDelArray(lookup[k]);
 		}
 		safeDelArray(lookup);
-	}
+	}*/
 }
 
 void Warp::update(int delta) {
@@ -114,8 +115,7 @@ void Warp::render(Image* imageIn, Image* imageOut, int stepI, int stepJ, Chunk &
 		// now down sample the imageIn
 		imageIn->downSample(imageSmallIn);
 		//imageSmallOut->copy(imageSmallIn);
-	}
-	
+	}	
 	
 	// do warp in imageSmall
 	warpTimer.Reset();
@@ -145,8 +145,6 @@ void Warp::render(Image* imageIn, Image* imageOut, int stepI, int stepJ, Chunk &
 	warpTimer.Update();
 	//printf("Warp time: %ld\n", warpTimer.GetTimeElapsed());
 	
-	
-
 	if (! (stepI == 1 && stepJ == 1)) {
 		// up sample from imageSmallOut
 		imageSmallOut->upSample(imageOut);

@@ -112,10 +112,8 @@ void init() {
 	fileManager.addPlaylist("music/playlist.txt");
 	fileManager.loadFileListToTweakBar(bar);
 
-	chunk = new Chunk();
-	//audioIn.loadAudio(fileAudio);
-	//audioOut.setChannels(audioIn.getChannels());
-	audioOut.setChannels(2);
+	chunk = new Chunk();	
+	audioOut.setChannels(2); // now only supports two channels data
 	fileManager.observerFileChangedFor((FileChangedHandler*)&audioIn);
 	
 	// add visualizer list
@@ -201,19 +199,18 @@ void display(void)
 	visualTimer.Reset();
 	visualTimer.Update();
 	if (renderVisualizer) {
-	if (isPlaying) {
-		// visualization	
-		//try {			
-			visualizer->update(delta);
-			visualizer->render(*chunk, rectVis);
-		//} catch (std::exception& e) {
-		//	printf("Exception: %s\n", e.what());
-		//}
-	}
+		if (isPlaying) {
+			// visualization	
+			//try {			
+				visualizer->update(delta);
+				visualizer->render(*chunk, rectVis);
+			//} catch (std::exception& e) {
+			//	printf("Exception: %s\n", e.what());
+			//}
+		}
 	}
 	
-	// render file list
-	//fileManager.render();
+	// render file list and visualizer list	
 	TwDraw();
 
 	// draw FPS
@@ -236,15 +233,11 @@ void idle() {
 	// play audio first
 	if (isPlaying) {
 		if (audioIn.hasNext()) {
-			// get a chunk
-			//mutexChunk.lock();
-			audioIn.sampleChunk(*chunk);		
-			//mutexChunk.unlock();
-			
-			// sleep
-			//sleepMiliseconds(1);
+			// get a chunk			
+			audioIn.sampleChunk(*chunk);					
 		} else {
 			isPlaying = false;
+			// FIXME: audioOut.stop() causes infinite circular buffer loop. STK's RtWvOut bug!?
 			//audioOut.stop();
 			//memset(chunk, 0, sizeof(Chunk));
 		}
@@ -260,7 +253,8 @@ void idle() {
 
 	// decide to render or skip frame
 	if (visualFrameTime <= idealFrameTime - audioFrameTime) {
-		renderVisualizer = true;		
+		renderVisualizer = true;	
+		// call display function directly
 		display();		
 	} else {
 		//visualFrameTime -= audioFrameTime;
@@ -308,10 +302,6 @@ void reshape(int width, int height)
 {
 	winWidth	= width;
 	winHeight	= height;
-	// TODO: in order to support rectangle window, the texture loaded from file should be scaled to 
-	// match the window size. This is not done yet.
-	//winWidth = winHeight = mmin(width, height); 
-
 
     // Set OpenGL viewport and camera
     glViewport(0, 0, winWidth, winHeight);
@@ -411,19 +401,6 @@ int loadAntTweakBar() {
     TwDefine(" GLOBAL "); // Message added to the help bar.
     TwDefine(" Playlist size='280 440' color='128 128 128' position='200 20' valueswidth=360 fontsize=2 iconified=true"); // change default tweak bar size and color
 
-	// Add the enum variable 'g_CurrentShape' to 'bar'
-    // (before adding an enum variable, its enum type must be declared to AntTweakBar as follow)
-	/*
-    {
-
-        // ShapeEV associates Shape enum values with labels that will be displayed instead of enum values
-        TwEnumVal shapeEV[nbFiles] = { {SHAPE_TEAPOT, "Teapot"}, {SHAPE_TORUS, "Torus"}, {SHAPE_CONE, "Cone"} };
-        // Create a type for the enum shapeEV
-        TwType shapeType = TwDefineEnum("ShapeType", shapeEV, NUM_SHAPES);
-        // add 'g_CurrentShape' to 'bar': this is a variable of type ShapeType. Its key shortcuts are [<] and [>].
-        TwAddVarRW(bar, "Shape", shapeType, &g_CurrentShape, " keyIncr='<' keyDecr='>' help='Change object shape.' ");
-    }*/
-
 	return 0;
 }
 
@@ -432,10 +409,23 @@ void printUsage() {
 	printf("CS5249 Audio Visualization\n");
 	printf("--------------------------------------------------------------------------------\n");
 	printf("[Hot keys]\n");
-	printf("Space				: play/pause audio.\n");	
-	printf("Left/right arrow		: change audio file.\n");
-	printf("1 to 5				: change visualizer.\n");
-	printf("ESC				: quit.\n");
+	printf("  * Space			: play/pause audio.\n");	
+	printf("  * Left/right arrow		: change audio file.\n");
+	printf("  * 1 to 5			: change visualizer.\n");
+	printf("  * ESC				: quit.\n");
+	printf("\n");
+	printf("[AntTweakBar]\n");
+	printf("  * Click on the Playlist icon at the bottom left to see playlist.\n");
+	printf("\n");
+	printf("[Playlist]\n");
+	printf("  * Playlist is loaded from ./music/playlist.txt by default.\n");
+	printf("  * Please refer to ./music/playlist.txt to know how to change the playlist.\n");
+	printf("  * Note that file names are limited to 256 characters only.\n");
+	printf("  * Current player only supports WAV audio format.\n");
+	printf("\n");
+	printf("[Performance]\n");
+	printf("  * If you encounter buffer underrun warning, please resize the visualization\n");
+	printf("window to be smaller.\n");
 }
  
 int main(int argc, char *argv[])
