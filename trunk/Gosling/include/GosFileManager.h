@@ -48,8 +48,7 @@ public:
 	*/
 	void observerFileChangedFor(FileChangedHandler* in);
 	void removeObserveFileChangedFor(FileChangedHandler* in);
-protected:
-	//int		loadAntTweakBar();
+
 protected:
 	std::vector<String> files;
 	std::vector<char*> filesNamePtr;

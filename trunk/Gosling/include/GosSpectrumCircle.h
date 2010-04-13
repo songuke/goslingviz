@@ -15,9 +15,6 @@ public:
 public:
 	void render(Chunk& c, Rect r);
 	void onFileChanged(const String& file);
-protected:
-	//Chunk chunk1;
-	//Chunk chunk2;
 };
 }
 

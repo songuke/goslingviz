@@ -17,20 +17,11 @@ Visualizer2D::~Visualizer2D(void)
 void Visualizer2D::setBufferSize(int w, int h) {
 	// initialize a new buffer with current size
 	if (buffer == 0) {
-		buffer = new Image(w, h, 3);
-		//width = w; height = h;
-		//buffer = (byte*) malloc(sizeof(byte) * 3 * width * height);
-		//memset(buffer, 0, sizeof(byte) * 3 * width * height);
-	} else {
-		//if (this->width != w || this->height != h) { // size changed
+		buffer = new Image(w, h, 3);		
+	} else {		
 		if (buffer->getWidth() != w || buffer->getHeight() != h) { // size changed
 			safeDel(buffer);
 			buffer = new Image(w, h, 3);
-
-			//width = w; height = h;
-			//safeFree(buffer);
-			//buffer = (byte*) malloc(sizeof(byte) * 3 * width * height);
-			//memset(buffer, 0, sizeof(byte) * 3 * width * height);
 		}
 	}
 }
