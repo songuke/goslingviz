@@ -1,7 +1,7 @@
+.\music\newage.wav
+.\music\rock.wav
+.\music\The_Sad_Rose.wav
 .\music\classical.wav
 .\music\dmetal.wav
 .\music\jazz.wav
-.\music\newage.wav
 .\music\pmetal.wav
-.\music\rock.wav
-.\music\The_Sad_Rose.wav

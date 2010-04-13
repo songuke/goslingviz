@@ -7,9 +7,10 @@
 namespace Gos
 {
 Curve::Curve(void)
-: t(0), imageSmall(0), mask(0), makeImageSmall(false)
+: t(0), imageSmall(0), mask(0), makeImageSmall(false), useMask(false)
 {
 	nbCurveTypes = 4;
+	setCurveType(0); // default
 }
 
 Curve::~Curve(void)
@@ -35,36 +36,9 @@ void Curve::update(int delta) {
 	//t += delta;
 }
 
-void Curve::render(Image* imageIn, Chunk& c, int curveType) {
-	//
-	// imageSmall construction if needed
-	//
-	if (useMask) {
-		if (makeImageSmall) {
-			safeDel(imageSmall);
-			imageSmall = new Image(imageIn->getWidth() / stepJ, imageIn->getHeight() / stepI, imageIn->getChannels());
+void Curve::setCurveType(int curveType) {
+	this->curveType = curveType;
 
-			safeDel(mask);
-			mask = new Image(imageIn->getWidth() / stepJ, imageIn->getHeight() / stepI, 1);
-
-			makeImageSmall = false;
-		}	
-		mask->clear();
-	}
-	Image* image;
-	if (useMask)
-		image = imageSmall;
-	else
-		image = imageIn;
-
-	double maxAmp = 0.0;
-	for (int i = 0; i < kChunkSize; ++i)
-		maxAmp = std::max(maxAmp, fabs(c.amplitude[i][0]));
-	float r = maxAmp;
-	
-	Float2 p0, p1;
-
-	double t0, t1;
 	switch (curveType) {
 		// draw a circle			
 		case 0:
@@ -101,8 +75,47 @@ void Curve::render(Image* imageIn, Chunk& c, int curveType) {
 		}
 		break;
 	}
+}
+
+void Curve::render(Image* imageIn, Chunk& c) {
+	//
+	// imageSmall construction if needed
+	//
+	/*
+	if (useMask) {
+		if (makeImageSmall) {
+			safeDel(imageSmall);
+			imageSmall = new Image(imageIn->getWidth() / stepJ, imageIn->getHeight() / stepI, imageIn->getChannels());
+
+			safeDel(mask);
+			mask = new Image(imageIn->getWidth() / stepJ, imageIn->getHeight() / stepI, 1);
+
+			makeImageSmall = false;
+		}	
+		mask->clear();
+	}
+	Image* image;
+	if (useMask)
+		image = imageSmall;
+	else
+		image = imageIn;
+	*/
+	Image* image = imageIn;
+
+	double maxAmp = 0.0;
+	for (int i = 0; i < kChunkSize; ++i)
+		maxAmp = std::max(maxAmp, fabs(c.amplitude[i][0]));
+	float r = maxAmp; // [0, 1]
+	
+	// curve color based on intensity
+	float hue = r * 360;
+	float value = 1.0f;
+	float saturation = r;
+	Float4 color = hsv2rgb(hue, value, saturation);
+
+	Float2 p0, p1;
 	double t = t0;
-	int steps = 32;
+	int steps = 64;
 	double step = (t1 - t0) / steps;
 
 	p0 = func(t, r, c);
@@ -114,15 +127,19 @@ void Curve::render(Image* imageIn, Chunk& c, int curveType) {
 		// change to coordinate system from center to top left
 		p1 = image->transformLowerLeft(p1);
 
+		/*
 		if (useMask)
-			Line::draw(image, p0, p1, Float4(1.0f, 0.0f, 0.0f, 1.0f), mask);
+			Line::draw(image, p0, p1, color, mask);
 		else
-			Line::draw(image, p0, p1, Float4(1.0f, 0.0f, 0.0f, 1.0f));
+			Line::draw(image, p0, p1, color);
+		*/
+		Line::draw(image, p0, p1, color);
 		
 		p0 = p1;
 	}
 
 	// distribute drawn points from imageSmall to image	
+	/*
 	if (useMask) {
 		int sh = imageSmall->getHeight();
 		int sw = imageSmall->getWidth();
@@ -133,7 +150,7 @@ void Curve::render(Image* imageIn, Chunk& c, int curveType) {
 					imageIn->setPixel(Float2(x, y), imageSmall->getPixel(p));
 			}
 		}
-	}
+	}*/
 }
 
 int Curve::getCurveCount() const {

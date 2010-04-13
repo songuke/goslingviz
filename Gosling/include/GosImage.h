@@ -106,13 +106,11 @@ public:
 
 	}
 
-	inline Float4 Image::getPixel(const Float2& position) {
-		Float4 color;
-		Float2 p(position);
-		
+	inline Float4 Image::getPixel(const Float2& p) {
+		Float4 color;		
 		int index = (int)p.y * width + (int)p.x;
 		for (int i = 0; i < channels; ++i) 
-			color[i] = buffer[channels * index + i] / 255.0f;
+			color[i] = buffer[channels * index + i] * from255to1;
 		color.w = 1.0f;
 		return color;
 	}
@@ -217,6 +215,12 @@ public:
 	Clear the image to 0.
 	*/
 	void	clear();
+
+	/**
+	Blend the input image with current image. The weight corresponds to the weight of the input image.
+	*/
+	void	blend(Image* im, float weight);
+
 protected:
 	inline bool Image::isOutOfBound(const Float2& p) {
 		if (p.x < 0 || p.x >= width || p.y < 0 || p.y >= height)
@@ -232,7 +236,7 @@ protected:
 	float* s, *t;			// interpolated coefficients in a grid cell
 	Float2 center;
 
-	Image* tmp;
+	Image* tmp;	
 };
 }
 

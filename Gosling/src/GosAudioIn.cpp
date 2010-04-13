@@ -68,14 +68,18 @@ void AudioIn::sampleChunk(Chunk& c) {
 	memset(c.amplitude, 0, sizeof(c.amplitude));
 
 	wvIn->tick(*frames);
-	if (frames->size() > 0) {
-		for (int i = 0; i < wvIn->getSize(); ++i) {
+	//if (frames->size() > 0) {
+		//printf("%d\n", wvIn->getSize());
+		//printf("%d\n", frames->size());
+		int size = frames->size() / wvIn->channelsOut();
+		//for (int i = 0; i < wvIn->getSize(); ++i) {
+		for (int i = 0; i < size; ++i) {
 			for (int j = 0; j < wvIn->channelsOut(); ++j) {
 				double sample = (*frames)[i * wvIn->channelsOut() + j];
 				c.amplitude[i][j] = sample; // already normalized
 			}
 		}
-	}
+	//}
 
 	//
 	// frequency domain

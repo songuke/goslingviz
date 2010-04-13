@@ -19,7 +19,7 @@ void AudioOut::setChannels(int channels) {
 		this->channels = channels;
 		// reset wvOut
 		safeDel(wvOut);
-		wvOut = new RtWvOut(channels, kSampleRate, 0, kOutputBufferSize, 32);
+		wvOut = new RtWvOut(channels, kSampleRate, 0, kOutputBufferSize, kNbBuffers);
 
 		// buffer
 		safeDel(frames);

@@ -23,6 +23,7 @@ public:
 	void sleep(); 
 	void onKey(int key);
 	void onFileChanged(const String& file);
+	void onBeat();
 
 protected:
 	Oscilloscope osc;

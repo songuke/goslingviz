@@ -18,6 +18,9 @@ namespace Gos
 	#define safeDel(x) if(x) { delete x; x = 0; }
 	#define safeDelArray(x) if(x) { delete [] x; x = 0; }
 
+	// constant
+	const double from255to1 = 0.003921568627450980392156862745098;
+
 	// integer swap
 	#define SWAP(x, y) (x ^= y ^= x ^= y)
 

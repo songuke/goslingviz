@@ -31,16 +31,16 @@ void CurveWarp::sleep() {
 void CurveWarp::update(int delta) {
 	warp.update(delta);
 
-	
+	/*
 	while (timeElapsed > nextWarpTime) {
 		timeElapsed -= nextWarpTime;
 
 		// reset background after some time
 		// TODO: blend it to avoid abrupt change.
 		// TODO: randomly choose another background.
-		buffer->copy(scaledBackground);
+		//buffer->copy(scaledBackground);
 		
-	}
+	}*/
 
 	/*
 	drawCurveTimeElapsed += delta;
@@ -50,12 +50,13 @@ void CurveWarp::update(int delta) {
 	}*/
 	//
 	
+	/*
 	nextCurveTimeElapsed += delta;
 	if (nextCurveTimeElapsed > nextCurveTime) {
 		nextCurveTimeElapsed -= nextCurveTime;
 		curveType = (curveType + 1) % curve.getCurveCount();
-		printf("Curve changed: %d\n", curveType);
-	}
+		//printf("Curve changed: %d\n", curveType);
+	}*/
 
 	Visualizer2D::update(delta);
 }
@@ -81,6 +82,11 @@ void CurveWarp::renderBuffer(Chunk& c, Rect r) {
 		}
 	}
 
+	// ping-pong buffer
+	Image* t = buffer;
+	buffer = imageOut;
+	imageOut = t;
+
 	// background
 	if (firstCurveWarp) {
 		//byte* pixels	= buffer->getPixels();
@@ -102,14 +108,15 @@ void CurveWarp::renderBuffer(Chunk& c, Rect r) {
 	
 	// draw a curve when there exists an amplitude that is larger than a threshold
 	for (int i = 0; i < kChunkSize; ++i) {	
-		if (fabs(c.amplitude[i][0]) > thresDrawCurve || fabs(c.amplitude[i][1]) > thresDrawCurve) {			
+		//if (fabs(c.amplitude[i][0]) > thresDrawCurve || fabs(c.amplitude[i][1]) > thresDrawCurve) {			
+		if (fabs(c.amplitude[i][0]) > thresDrawCurve) {			
 			drawCurve = true;
 			break;
 		}
 	}
 	
-	int stepI = 4;
-	int stepJ = stepI;
+	const int stepI = 4;
+	const int stepJ = stepI;
 
 	//buffer->setGrid(stepI, stepJ);
 	//imageOut->setGrid(stepI, stepJ);
@@ -128,17 +135,19 @@ void CurveWarp::renderBuffer(Chunk& c, Rect r) {
 
 	// warp	
 	//warp.setGrid(stepI, stepJ);
-	warp.render(buffer, imageOut, stepI, stepJ, c, warpType);
+	//warp.render(buffer, imageOut, stepI, stepJ, c, warpType);
+
+	warp.render(imageOut, buffer, stepI, stepJ, c, warpType);
 
 	// copy back
-	buffer->copy(imageOut);
+	//buffer->copy(imageOut);
 	
 	// draw the curve again	
 	
 	if (drawCurve) {
-		printf("Draw curve\n");
-		curve.setUseMask(false);
-		curve.render(buffer, c, curveType);		
+		//printf("Draw curve\n");
+		//curve.setUseMask(false);
+		curve.render(buffer, c);		
 	}
 	
 	if (drawCurve)
@@ -147,7 +156,31 @@ void CurveWarp::renderBuffer(Chunk& c, Rect r) {
 	if (firstCurveWarp)
 		firstCurveWarp = false;
 }
+/*
+void CurveWarp::render(Chunk& c, Rect r) {
+	// prepare render buffer
+	float width		= r.right - r.left;
+	float height	= r.top - r.bottom;	
+	this->setBufferSize((int)width, (int)height);
+	if (buffer == 0) {
+		throw std::exception("Render buffer null.\n");
+	}
 
+	// render to buffer
+	this->renderBuffer(c, r);
+
+	// render buffer to screen using OpenGL glDrawPixels function
+	glPushAttrib(GL_ENABLE_BIT);
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
+	glDisable(GL_LIGHTING);
+	glRasterPos2f(0, 0);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glDrawPixels(width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer->getPixels());
+	glPopAttrib();
+}
+*/
 void CurveWarp::blur(Image* imageIn, Image* imageOut, Float2& kernel) {
 	if (imageTmp) {
 		if (imageTmp->isSameSize(imageIn) == false) {
@@ -212,15 +245,18 @@ void CurveWarp::onKey(int key) {
 }
 
 void CurveWarp::onBeat() {
-	printf("Beat detected!\n"); //placeholder
+	//printf("Beat detected!\n"); //placeholder
 
 	// change warp type
-	warpType = (warpType + 1) % warp.getWarpCount();
-	printf("Warp changed: %d\n", warpType);
+	//warpType = (warpType + 1) % warp.getWarpCount();
+	warpType = randomInteger(0, warp.getWarpCount() - 1);
+	//printf("Warp changed: %d\n", warpType);
 
 	// also random a curve type
 	curveType = randomInteger(0, curve.getCurveCount() - 1);
-
+	curve.setCurveType(curveType);
+	// can blend it a little background if needed.
+	//buffer->blend(scaledBackground, 0.1f);
 }
 
 void CurveWarp::onFileChanged(const String& file) {

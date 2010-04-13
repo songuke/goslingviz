@@ -209,18 +209,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\GosGuitarBody.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GosGuitarKeyboard.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GosGuitarPlayer.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\src\GosImage.cpp"
 				>
 			</File>
@@ -242,10 +230,6 @@
 			</File>
 			<File
 				RelativePath=".\src\GosOscilloscope.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\GosPluckedString.cpp"
 				>
 			</File>
 			<File
@@ -307,10 +291,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\GosExcitation.h"
-				>
-			</File>
-			<File
 				RelativePath=".\include\GosFileManager.h"
 				>
 			</File>
@@ -324,18 +304,6 @@
 			</File>
 			<File
 				RelativePath=".\include\GosGlobalVisualizer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\GosGuitarBody.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\GosGuitarKeyboard.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\GosGuitarPlayer.h"
 				>
 			</File>
 			<File
@@ -356,14 +324,6 @@
 			</File>
 			<File
 				RelativePath=".\include\GosOscilloscope.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\GosPluckedString.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\GosRingBuffer.h"
 				>
 			</File>
 			<File

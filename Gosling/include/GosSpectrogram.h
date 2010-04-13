@@ -15,10 +15,16 @@ public:
 public:
 	void render(Chunk& c, Rect r);
 	void onFileChanged(const String& file);
+	void onBeat();
 
-protected:
-	//Chunk chunk1;
-	//Chunk chunk2;
+protected:	
+	bool needRender;
+	Chunk* lastChunk;
+	void renderChunk(Chunk& c, Rect r);
+	float* coolFactor, *coolVel, *coolAccel;	
+	int nbBars;
+
+	float logBase, logStep;
 };
 }
 

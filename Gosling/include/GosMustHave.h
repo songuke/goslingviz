@@ -45,7 +45,8 @@ namespace Gos
 // Constant
 //-----------------------------------------------------------------------------
 	const int kSampleRate		= 44100;
-	const int kOutputBufferSize = 4096;
+	const int kOutputBufferSize = 1024;
+	const int kNbBuffers		= 64;
 
 //-----------------------------------------------------------------------------
 // Guitar model
@@ -101,5 +102,17 @@ namespace Gos
 #include "GosUtil.h"
 #include "GosFloat2.h"
 #include "GosFloat4.h"
+
+//------------------------------------------------------------------------------
+// Util functions that cannot be put into GosUtil appears here
+//------------------------------------------------------------------------------
+namespace Gos {
+	// color from HSV to RGB
+	/* value: [0, 1]
+	 * hue: [0, 360], in float for higher resolution
+	 * saturation [0, 1]
+	 */
+	Float4 hsv2rgb(float& value, float& hue, float& saturation);
+}
 
 #endif
