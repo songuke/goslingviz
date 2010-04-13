@@ -21,9 +21,10 @@ public:
 	void addPlaylist(const String& file);
 
 	/**
-	Use AntTweakBar library to render file list in OpenGL.
+	Keep track of file list change.
 	*/
-	void render();
+	void update();
+	
 	void onMouse(int button, int state, int x, int y);
 	void onMotion(int x, int y);
 	void onPassiveMotion(int x, int y);
@@ -35,7 +36,7 @@ public:
 	/**
 	Load current file list to TweakBar UI.
 	*/
-	void loadFileListToTweakBar();	
+	void loadFileListToTweakBar(TwBar* bar);	
 	
 	/**
 	Return current (playing) file index.
@@ -48,8 +49,7 @@ public:
 	void observerFileChangedFor(FileChangedHandler* in);
 	void removeObserveFileChangedFor(FileChangedHandler* in);
 protected:
-	TwBar *bar;						// pointer to the tweak bar
-	int		loadAntTweakBar();
+	//int		loadAntTweakBar();
 protected:
 	std::vector<String> files;
 	std::vector<char*> filesNamePtr;

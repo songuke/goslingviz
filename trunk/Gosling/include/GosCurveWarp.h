@@ -21,7 +21,9 @@ public:
 	void onBeat();
 	void onFileChanged(const String& file);
 
+	//void render(Chunk& c, Rect r); // override to implement ping-pong buffer
 protected:
+	
 	void renderBuffer(Chunk& c, Rect r);
 	
 	void blur(Image* imageIn, Image* imageOut, Float2& k);

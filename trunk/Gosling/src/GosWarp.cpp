@@ -1,6 +1,7 @@
 #include "GosWarp.h"
 #include "GosImage.h"
 #include "RenzoTimer.h"
+#include "GosChunk.h"
 
 using namespace Renzo;
 Timer warpTimer;
@@ -10,7 +11,7 @@ namespace Gos
 Warp::Warp(void)
 : lookup(0), width(0), height(0), timeElapsed(0), stepI(1), stepJ(1), imageSmallIn(0), imageSmallOut(0), makeSmallImages(false)
 {
-	nbWarpTypes = 5;
+	nbWarpTypes = 6;
 }
 
 Warp::~Warp(void)
@@ -122,13 +123,18 @@ void Warp::render(Image* imageIn, Image* imageOut, int stepI, int stepJ, Chunk &
 	int width = out->getWidth();
 	int height = out->getHeight();
 
-	//Float2 s(stepJ, stepI);
-	//Float2 s_rep(1.0f / stepJ, 1.0f / stepI);
+	double maxAmp = 0.0;
+	for (int i = 0; i < kChunkSize; ++i) {
+		double amp = fabs(c.amplitude[i][0]);
+		if (maxAmp < amp)
+			maxAmp = amp;
+	}
+
 	for (int i = 0; i < height; ++i) {
 		for (int j = 0; j < width; ++j) {
 			Float2 u(j, i);
 			Float2 p = out->transformCenter(u);
-			Float2 q = warp(p, warpType);
+			Float2 q = warp(p, warpType, maxAmp);
 			//Float2 q = warp(p * s_rep, warpType) * s;
 			Float2 v = in->transformLowerLeft(q);
 			Float4 color = in->getPixelBilinear(v);

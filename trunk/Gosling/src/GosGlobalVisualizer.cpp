@@ -63,4 +63,10 @@ void GlobalVisualizer::onFileChanged(const Gos::String &file) {
 	spec.onFileChanged(file);
 }
 
+void GlobalVisualizer::onBeat() {
+	osc.onBeat();
+	vis2d.onBeat();
+	spec.onBeat();
+}
+
 }

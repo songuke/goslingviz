@@ -81,6 +81,15 @@ void Image::copy(Image* im) {
 	memcpy(this->getPixels(), im->getPixels(), sizeof(byte) * width * height * channels);
 }
 
+void Image::blend(Image* im, float weight) {
+	for (int i = 0; i < height; ++i) {
+		for (int j = 0; j < width; ++j) {
+			Float2 p(j, i);
+			this->setPixel(p, im->getPixel(p) * weight + this->getPixel(p) * (1.0f - weight));
+		}
+	}
+}
+
 void Image::setGrid(int _stepI, int _stepJ) {
 	if (stepI == _stepI && stepJ == _stepJ) return;
 

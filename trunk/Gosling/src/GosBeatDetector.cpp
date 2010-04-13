@@ -58,11 +58,12 @@ float BeatDetector::calcThreshEnergy()
 {
 	//calc average local energy
 	float avgE = 0;
+	float histSize1 = 1.0f / history.size();
 	for (int i=0; i<history.size(); i++)
 	{
 		avgE += history.at(i);
 	}
-	avgE /= history.size();
+	avgE *= histSize1;
 
 	//calc variance of energies
 	float var = 0;
@@ -70,7 +71,8 @@ float BeatDetector::calcThreshEnergy()
 	{
 		var += pow((history.at(i) - avgE), 2);
 	}
-	var /= history.size();
+	//var /= history.size();
+	var *= histSize1;
 	//var = sqrt(var);
 
 	//printf("var %f, avge %f\n", var, avgE); //DEBUG

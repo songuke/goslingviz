@@ -24,7 +24,7 @@ public:
 	static inline Float2 heart(float t, float a, Chunk& c) {
 		Float2 p;
 		//float r = 10.0f * a * ((sin(t) * sqrt(fabs(cos(t)))) / (sin(t) + 7/5) - 2 * sin(t) + 2);
-		float r = a * (1 - cos(t));
+		float r = a * (1 - sin(t));
 		p.x = r * cos(t);
 		p.y = r * sin(t);
 		return p;
@@ -32,7 +32,7 @@ public:
 
 	static inline Float2 flower(float t, float a, Chunk& c) {
 		Float2 p;
-		int n = 4;
+		int n = floor(a * 4) + 4;
 		float r = a * sin(n * t);
 		p.x = r * cos(t);
 		p.y = r * sin(t);

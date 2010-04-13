@@ -34,27 +34,29 @@ protected:
 	*/
 
 	//inline Float2 Warp::_warp(Float2 p, int warpType) {
-	inline Float2 Warp::warp(Float2 p, int warpType) {
+	inline Float2 Warp::warp(Float2 p, int warpType, float maxAmp) {
 		Float2 q;
 		float fDelta = delta * 0.01f;
 		switch(warpType) {
-			case 0: 
-			{	
-				float v = 0.05 * fDelta;
-				Float2 n = p.normalize();
-				q = p - n * v;
-				
-				//q = p;
+			case 0:
+			{
+				// 
+				// spiral (center more)
+				//			
+				float a = 0.1f * fDelta;
+				float angle = a * exp(-(p.x*p.x + p.y*p.y));
+				q.x = cos(angle)*p.x + sin(angle)*p.y;
+				q.y = -sin(angle)*p.x + cos(angle)*p.y;		
 			}
 			break;
 
 			case 1:
 			{
 				// 
-				// spiral (center more)
+				// spiral 2 (edge more)
 				//			
-				float a = 0.1f * fDelta, b = 1;
-				float angle = a * exp(-(p.x*p.x + p.y*p.y) / (b*b));
+				float a = 0.1f * fDelta;
+				float angle = a * (p.x*p.x + p.y*p.y);
 				q.x = cos(angle)*p.x + sin(angle)*p.y;
 				q.y = -sin(angle)*p.x + cos(angle)*p.y;		
 			}
@@ -63,16 +65,28 @@ protected:
 			case 2:
 			{
 				// 
-				// spiral 2 (edge more)
+				// spiral (center more) (reverse)
 				//			
-				float a = 0.1f * fDelta, b = 1;
-				float angle = a * (p.x*p.x + p.y*p.y) / (b*b);
+				float a = 0.25f * fDelta;
+				float angle = -a * exp(-(p.x*p.x + p.y*p.y));
 				q.x = cos(angle)*p.x + sin(angle)*p.y;
 				q.y = -sin(angle)*p.x + cos(angle)*p.y;		
 			}
 			break;
 
 			case 3:
+			{
+				// 
+				// spiral 2 (edge more) (reverse)
+				//			
+				float a = 0.25f * fDelta;
+				float angle = - a * (p.x*p.x + p.y*p.y);
+				q.x = cos(angle)*p.x + sin(angle)*p.y;
+				q.y = -sin(angle)*p.x + cos(angle)*p.y;		
+			}
+			break;
+
+			case 4:
 			{
 				float r = sqrt(p.x*p.x + p.y*p.y);
 				float r_1 = 1.0f / r;
@@ -87,7 +101,7 @@ protected:
 			}
 			break;
 
-			case 4:
+			case 5:
 			{
 				float r = sqrt(p.x*p.x + p.y*p.y);
 				float r_1 = 1.0f / r;
@@ -99,7 +113,15 @@ protected:
 			}
 			break;
 
-			case 5:
+			//----------------------------------------
+			case 6: 
+			{	
+				float v = 0.05 * fDelta;
+				Float2 n = p.normalize();
+				q = p - n * v;
+			}
+			break;
+			case 7:
 			{
 				/*
 				float r = sqrt(p.x*p.x + p.y*p.y);
